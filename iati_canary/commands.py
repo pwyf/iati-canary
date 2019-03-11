@@ -1,5 +1,3 @@
-from datetime import date
-
 import iatikit
 import requests
 import click
@@ -22,9 +20,8 @@ def init_db():
 @click.command()
 def refresh_iati():
     '''Refresh IATI data and schemas.'''
-    # iatikit.download.schemas()
-    # iatikit.download.data()
-    pass
+    iatikit.download.schemas()
+    iatikit.download.data()
 
 
 @click.command()
@@ -38,9 +35,10 @@ def refresh_metadata():
             'slug': publisher.name,
             'name': publisher.metadata.get('title'),
             'contact': contact if contact else None,
+            'total_datasets': len(publisher.datasets),
         }
         try:
-            pub = models.Publisher.get_by_id(publisher.name)
+            pub = models.Publisher.get(slug=publisher.name)
             [setattr(pub, k, v) for k, v in pub_arr.items()]
             pub.save()
         except DoesNotExist:
@@ -49,12 +47,13 @@ def refresh_metadata():
             contact = dataset.metadata.get('author_email', '').strip()
             dat_arr = {
                 'slug': dataset.name,
-                'name': dataset.metadata.get('title')[:255],
+                'name': dataset.metadata.get('title'),
+                'url': dataset.metadata['resources'][0]['url'],
                 'contact': contact if contact else None,
                 'publisher': pub,
             }
             try:
-                dat = models.Dataset.get_by_id(dataset.name)
+                dat = models.Dataset.get(slug=dataset.name)
                 [setattr(dat, k, v) for k, v in dat_arr.items()]
                 dat.save()
             except DoesNotExist:
@@ -71,12 +70,14 @@ def download_errors():
         if line == b'.':
             break
         status_code, _, dataset_slug, url = line.split(b' ')
-        dataset = models.Dataset.get_by_id(dataset_slug)
-        models.DownloadError.create(
-            dataset=dataset,
-            date_from=date.today(),
-            error_type='download error',
-        ).on_conflict_ignore().execute()
+        dataset = models.Dataset.get(slug=dataset_slug)
+        try:
+            models.DatasetError(
+                dataset=dataset,
+                error_type='download error',
+            ).save()
+        except:
+            db.database.rollback()
 
 
 @click.command()
@@ -85,12 +86,14 @@ def xml_errors():
     for d in iatikit.data().datasets:
         if d.validate_xml():
             continue
-        dataset = models.Dataset.get_by_id(d.name)
-        models.XMLError.create(
-            dataset=dataset,
-            date_from=date.today(),
-            error_type='xml error',
-        ).on_conflict_ignore().execute()
+        dataset = models.Dataset.get(slug=d.name)
+        try:
+            models.DatasetError(
+                dataset=dataset,
+                error_type='xml error',
+            ).save()
+        except:
+            db.database.rollback()
 
 
 @click.command()
@@ -101,9 +104,11 @@ def schema_errors():
             continue
         if d.validate_iati():
             continue
-        dataset = models.Dataset.get_by_id(d.name)
-        models.SchemaError.create(
-            dataset=dataset,
-            date_from=date.today(),
-            error_type='schema error',
-        ).on_conflict_ignore().execute()
+        dataset = models.Dataset.get(slug=d.name)
+        try:
+            models.DatasetError(
+                dataset=dataset,
+                error_type='schema error',
+            ).save()
+        except:
+            db.database.rollback()
