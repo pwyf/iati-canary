@@ -107,6 +107,14 @@ def schema_errors():
     '''Add schema errors to database.'''
     for d in iatikit.data().datasets:
         if not d.validate_xml():
+            dataset = models.Dataset.get(slug=d.name)
+            try:
+                models.DatasetError(
+                    dataset=dataset,
+                    error_type='xml error',
+                ).save()
+            except:
+                db.database.rollback()
             continue
         if d.validate_iati():
             continue
