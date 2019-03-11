@@ -1,6 +1,6 @@
 from flask import Flask
 
-from . import views
+from . import views, commands
 from .extensions import db
 
 
@@ -9,4 +9,10 @@ def create_app(config_object='iati_canary.settings'):
     app.config.from_object(config_object)
     app.register_blueprint(views.blueprint)
     db.init_app(app)
+    app.cli.add_command(commands.init_db)
+    app.cli.add_command(commands.refresh_iati)
+    app.cli.add_command(commands.refresh_metadata)
+    app.cli.add_command(commands.download_errors)
+    app.cli.add_command(commands.xml_errors)
+    app.cli.add_command(commands.schema_errors)
     return app
