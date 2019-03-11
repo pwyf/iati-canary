@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import iatikit
 import requests
 import click
@@ -31,11 +33,15 @@ def refresh_metadata():
         contact = publisher.metadata.get('publisher_contact_email', '').strip()
         if contact in ['please@update.email', 'Email not found']:
             contact = None
+        first_pub = datetime.strptime(
+            min([d.metadata.get('metadata_created')
+                 for d in publisher.datasets]), '%Y-%m-%dT%H:%M:%S.%f').date()
         pub_arr = {
             'slug': publisher.name,
             'name': publisher.metadata.get('title'),
             'contact': contact if contact else None,
             'total_datasets': len(publisher.datasets),
+            'first_published': first_pub,
         }
         try:
             pub = models.Publisher.get(slug=publisher.name)

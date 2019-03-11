@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from peewee import CharField, DateTimeField, ForeignKeyField, IntegerField
+from peewee import (CharField, DateField, DateTimeField,
+                    ForeignKeyField, IntegerField)
 
 from .extensions import db
 
@@ -19,6 +20,7 @@ class Publisher(CreatedUpdatedMixin, db.Model):
     name = CharField(max_length=1000)
     contact = CharField(null=True)
     total_datasets = IntegerField(default=0)
+    first_published = DateField(null=True)
 
 
 class Dataset(CreatedUpdatedMixin, db.Model):
