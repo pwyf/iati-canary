@@ -16,21 +16,30 @@ class CreatedUpdatedMixin(db.Model):
 
 
 class Publisher(CreatedUpdatedMixin, db.Model):
-    slug = CharField(index=True)
+    id = CharField(primary_key=True)
     name = CharField(max_length=1000)
-    contact = CharField(null=True)
     total_datasets = IntegerField(default=0)
     first_published = DateField(null=True)
 
 
-class Dataset(CreatedUpdatedMixin, db.Model):
-    slug = CharField(index=True)
-    name = CharField(max_length=1000)
-    url = CharField(max_length=1000)
-    contact = CharField(null=True)
-    publisher = ForeignKeyField(Publisher, backref='datasets')
+class Contact(CreatedUpdatedMixin, db.Model):
+    email = CharField()
+    publisher = ForeignKeyField(Publisher, backref='contacts',
+                                on_delete='CASCADE')
+    dataset_id = CharField(null=True)
+
+    class Meta:
+        indexes = (
+            (('email', 'publisher'), True),
+        )
 
 
 class DatasetError(CreatedUpdatedMixin, db.Model):
-    dataset = ForeignKeyField(Dataset, backref='errors', unique=True)
+    dataset_id = CharField(unique=True)
+    dataset_name = CharField(max_length=1000)
+    dataset_url = CharField()
+    publisher = ForeignKeyField(Publisher, backref='errors',
+                                on_delete='CASCADE')
     error_type = CharField()
+    error_count = IntegerField(default=1)
+    last_seen_at = DateTimeField(default=datetime.now)
