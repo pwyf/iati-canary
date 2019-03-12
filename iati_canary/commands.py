@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 import iatikit
@@ -73,3 +74,6 @@ def validate():
     for dataset in iatikit.data().datasets:
         if not dataset.validate_xml() or not dataset.validate_iati():
             validate_dataset(dataset.name)
+
+        os.remove(dataset.data_path)
+        os.remove(dataset.metadata_path)
