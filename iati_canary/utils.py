@@ -7,6 +7,7 @@ from . import models
 
 
 def validate_dataset(dataset_id):
+    print(f'Validating: {dataset_id}')
     dataset = iatikit.data().datasets.get(dataset_id)
 
     pub_id = dataset.metadata.get('organization', {}).get('name')
@@ -15,6 +16,7 @@ def validate_dataset(dataset_id):
     url = dataset.metadata['resources'][0]['url']
     error = False
     try:
+        print(f'Downloading: "{url}"')
         resp = requests.get(url, verify=False)
         if str(resp.status_code)[0] != '2':
             error = 'download error'
