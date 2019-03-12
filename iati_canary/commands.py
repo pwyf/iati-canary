@@ -1,3 +1,5 @@
+from os.path import join
+import json
 from datetime import datetime
 
 import iatikit
@@ -23,7 +25,11 @@ def init_db():
 def refresh_iati():
     '''Refresh IATI data and schemas.'''
     iatikit.download.schemas()
-    iatikit.download.data()
+    iatikit.download.metadata()
+
+    now = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    with open(join('__iatikitcache__', 'registry', 'metadata.json'), 'w') as f:
+        json.dump({'updated_at': now}, f)
 
 
 @click.command()

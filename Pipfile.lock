@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "db776cbe80cf83f4149eed7cbe77d0a8a71e5f4bf05a67ec9db83a57e59374d6"
+            "sha256": "9c2b6d6bc224fc3f60c947709b0b7d701511c126b83eb7e2f32caa7ff14b944b"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -75,12 +75,9 @@
             "version": "==19.9.0"
         },
         "iatikit": {
-            "hashes": [
-                "sha256:25961a944695082338cb81934c52f795aac78a5e8a004f8ddf8a903c820fdf56",
-                "sha256:492c4648c709ffc0498379a93bb776ec200b1ba9801c04a99d9edaefad4dcc3d"
-            ],
-            "index": "pypi",
-            "version": "==2.0.3"
+            "editable": true,
+            "git": "https://github.com/pwyf/iatikit.git",
+            "ref": "cc8013af957a8ea462c90d3100096f4cfe5fbba1"
         },
         "idna": {
             "hashes": [

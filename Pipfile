@@ -7,13 +7,13 @@ verify_ssl = true
 
 [packages]
 lxml = "*"
-iatikit = "*"
 flask = "*"
 requests = "*"
 peewee = "*"
 environs = "*"
 gunicorn = "*"
 psycopg2-binary = "*"
+iatikit = {editable = true,git = "https://github.com/pwyf/iatikit.git",ref = "dev"}
 
 [requires]
 python_version = "3.6"
