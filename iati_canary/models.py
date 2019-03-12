@@ -43,3 +43,17 @@ class DatasetError(CreatedUpdatedMixin, db.Model):
     error_type = CharField()
     error_count = IntegerField(default=1)
     last_seen_at = DateTimeField(default=datetime.now)
+
+    @classmethod
+    def upsert(cls, **kwargs):
+        error = cls.get_or_none(dataset_id=kwargs.get('dataset_id'))
+        if not error:
+            return cls.create(**kwargs)
+        if error.error_type != kwargs.get('error_type') and \
+                kwargs.get('error_type') == 'schema error':
+            # delete old error and replace
+            error.delete().execute()
+            return cls.create(**kwargs)
+        error.last_seen_at = datetime.now()
+        error.error_count += 1
+        return error.save()
