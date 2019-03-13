@@ -20,6 +20,7 @@ class Publisher(CreatedUpdatedMixin, db.Model):
     name = CharField(max_length=1000)
     total_datasets = IntegerField(default=0)
     first_published = DateField(null=True)
+    last_checked = DateTimeField(null=True)
 
 
 class Contact(CreatedUpdatedMixin, db.Model):

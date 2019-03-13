@@ -6,14 +6,22 @@ import iatikit
 from . import models
 
 
-def validate_dataset(dataset_id):
-    print(f'Validating: {dataset_id}')
-    dataset = iatikit.data().datasets.get(dataset_id)
+def validate_publisher_datasets(publisher_id):
+    # first, download metadata for publisher datasets
+    tmpl = 'https://iatiregistry.org/api/3/action/package_search?' + \
+           'q=organization:{publisher_id}'
+    j = requests.get(tmpl.format(publisher_id=publisher_id)).json()
+    for dataset in j['result']['results']:
+        validate_dataset(dataset)
 
-    pub_id = dataset.metadata.get('organization', {}).get('name')
+
+def validate_dataset(dataset):
+    print(f'Validating: {dataset["name"]}')
+
+    pub_id = dataset.get('organization', {}).get('name')
     publisher = models.Publisher.get_by_id(pub_id)
 
-    url = dataset.metadata['resources'][0]['url']
+    url = dataset['resources'][0]['url']
     error = False
     try:
         print(f'Downloading: "{url}"')
@@ -25,11 +33,10 @@ def validate_dataset(dataset_id):
         error = 'download error'
 
     if not error:
-        dataset = iatikit.Dataset(BytesIO(resp.content),
-                                  dataset.metadata_path)
-        if not dataset.validate_xml():
+        fresh = iatikit.Dataset(BytesIO(resp.content))
+        if not fresh.validate_xml():
             error = 'xml error'
-        elif not dataset.validate_iati():
+        elif not fresh.validate_iati():
             error = 'schema error'
 
     if not error:

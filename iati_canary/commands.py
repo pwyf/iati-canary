@@ -7,7 +7,7 @@ import click
 from peewee import DoesNotExist
 
 from .extensions import db
-from .utils import validate_dataset
+from .utils import validate_publisher_datasets
 from . import models
 
 
@@ -74,12 +74,14 @@ def refresh_metadata():
 
 
 @click.command()
-@click.argument('dataset', nargs=-1)
-def validate(dataset):
+@click.option('--count', type=int, default=0)
+def validate(count):
     '''Validate datasets, and add errors to database.'''
-    if dataset == ():
-        for dataset in iatikit.data().datasets:
-            validate_dataset(dataset.name)
-    else:
-        for d in dataset:
-            validate_dataset(d)
+    publishers = models.Publisher.select().order_by(
+        models.Publisher.last_checked.asc(nulls='FIRST'))
+    for idx, publisher in enumerate(publishers):
+        if idx >= count:
+            break
+        validate_publisher_datasets(publisher.id)
+        publisher.last_checked = datetime.now()
+        publisher.save()
