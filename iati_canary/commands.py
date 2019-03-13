@@ -22,19 +22,19 @@ def init_db():
 
 
 @click.command()
-def refresh_iati():
-    '''Refresh IATI data and schemas.'''
+def refresh_schemas():
+    '''Refresh IATI schemas.'''
     iatikit.download.schemas()
-    iatikit.download.metadata()
-
-    now = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
-    with open(join('__iatikitcache__', 'registry', 'metadata.json'), 'w') as f:
-        json.dump({'updated_at': now}, f)
 
 
 @click.command()
 def refresh_metadata():
-    '''Refresh publisher and dataset metadata.'''
+    '''Refresh publisher metadata.'''
+    iatikit.download.metadata()
+    now = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    with open(join('__iatikitcache__', 'registry', 'metadata.json'), 'w') as f:
+        json.dump({'updated_at': now}, f)
+
     for publisher in iatikit.data().publishers:
         contacts = []
         contact = publisher.metadata.get('publisher_contact_email', '').strip()

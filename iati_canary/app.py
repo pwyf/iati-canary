@@ -10,7 +10,7 @@ def create_app(config_object='iati_canary.settings'):
     app.register_blueprint(views.blueprint)
     db.init_app(app)
     app.cli.add_command(commands.init_db)
-    app.cli.add_command(commands.refresh_iati)
+    app.cli.add_command(commands.refresh_schemas)
     app.cli.add_command(commands.refresh_metadata)
     app.cli.add_command(commands.validate)
     return app

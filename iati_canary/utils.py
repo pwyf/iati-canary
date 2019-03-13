@@ -50,9 +50,9 @@ def validate_dataset(dataset):
         return None
 
     return models.DatasetError.upsert(
-        dataset_id=dataset.name,
-        dataset_name=dataset.metadata.get('title'),
-        dataset_url=dataset.metadata['resources'][0]['url'],
+        dataset_id=dataset['name'],
+        dataset_name=dataset['title'],
+        dataset_url=url,
         publisher=pub_id,
         error_type=error,
     )
