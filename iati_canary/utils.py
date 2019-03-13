@@ -8,11 +8,17 @@ from . import models
 
 def validate_publisher_datasets(publisher_id):
     # first, download metadata for publisher datasets
+    start = 0
     tmpl = 'https://iatiregistry.org/api/3/action/package_search?' + \
-           'q=organization:{publisher_id}'
-    j = requests.get(tmpl.format(publisher_id=publisher_id)).json()
-    for dataset in j['result']['results']:
-        validate_dataset(dataset)
+           'q=organization:{publisher_id}&start={start}&rows=50'
+    while True:
+        j = requests.get(tmpl.format(
+            publisher_id=publisher_id, start=start)).json()
+        res = j['result']['results']
+        if len(res) == 0:
+            break
+        for dataset in res:
+            validate_dataset(dataset)
 
 
 def validate_dataset(dataset):
