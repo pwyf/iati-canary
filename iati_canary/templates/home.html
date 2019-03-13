@@ -1,0 +1,13 @@
+<html>
+<body>
+
+<h1>All publishers</h1>
+
+<ul>
+{% for publisher in publishers %}
+  <li><a href="{{ url_for('iati_canary.publisher', publisher_id=publisher.id) }}">{{ publisher.name }}</a></li>
+{% endfor %}
+</ul>
+
+</body>
+</html>

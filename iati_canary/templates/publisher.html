@@ -1,0 +1,15 @@
+<html>
+<body>
+
+<h1>{{ publisher.name }}</h1>
+
+<p>{{ publisher.errors | count }} of {{ publisher.total_datasets }} datasets have errors.</p>
+
+<ul>
+{% for error in publisher.errors %}
+  <li>{{ error.dataset_name }} (<a href="{{ error.dataset_url }}" target="_blank">source</a>)</li>
+{% endfor %}
+</ul>
+
+</body>
+</html>
