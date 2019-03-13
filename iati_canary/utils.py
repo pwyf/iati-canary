@@ -17,7 +17,8 @@ def validate_dataset(dataset_id):
     error = False
     try:
         print(f'Downloading: "{url}"')
-        resp = requests.get(url, verify=False)
+        resp = requests.get(url, verify=False,
+                            headers={'User-Agent': 'IATI Canary'})
         if str(resp.status_code)[0] != '2':
             error = 'download error'
     except requests.exceptions.ConnectionError:
