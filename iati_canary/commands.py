@@ -74,7 +74,12 @@ def refresh_metadata():
 
 
 @click.command()
-def validate():
+@click.argument('dataset', nargs=-1)
+def validate(dataset):
     '''Validate datasets, and add errors to database.'''
-    for dataset in iatikit.data().datasets:
-        validate_dataset(dataset.name)
+    if dataset == ():
+        for dataset in iatikit.data().datasets:
+            validate_dataset(dataset.name)
+    else:
+        for d in dataset:
+            validate_dataset(d)
