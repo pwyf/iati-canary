@@ -9,23 +9,24 @@ from . import models
 def validate_publisher_datasets(publisher_id):
     # first, download metadata for publisher datasets
     start = 0
+    rows = 50
     tmpl = 'https://iatiregistry.org/api/3/action/package_search?' + \
-           'q=organization:{publisher_id}&start={start}&rows=50'
+           'q=organization:{publisher_id}&start={start}&rows={rows}'
     while True:
         j = requests.get(tmpl.format(
-            publisher_id=publisher_id, start=start)).json()
+            publisher_id=publisher_id, start=start, rows=rows)).json()
         res = j['result']['results']
         if len(res) == 0:
             break
         for dataset in res:
             validate_dataset(dataset)
+        start += rows
 
 
 def validate_dataset(dataset):
     print(f'Validating: {dataset["name"]}')
 
     pub_id = dataset.get('organization', {}).get('name')
-    publisher = models.Publisher.get_by_id(pub_id)
 
     url = dataset['resources'][0]['url']
     error = False
@@ -52,6 +53,6 @@ def validate_dataset(dataset):
         dataset_id=dataset.name,
         dataset_name=dataset.metadata.get('title'),
         dataset_url=dataset.metadata['resources'][0]['url'],
-        publisher=publisher,
+        publisher=pub_id,
         error_type=error,
     )
