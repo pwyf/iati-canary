@@ -10,7 +10,9 @@ blueprint = Blueprint('iati_canary', __name__,
 
 @blueprint.route('/')
 def home():
-    return render_template('home.html', publishers=models.Publisher)
+    publishers = models.Publisher.select().order_by(
+        models.Publisher.last_checked.desc(nulls='LAST'))
+    return render_template('home.html', publishers=publishers)
 
 
 @blueprint.route('/publisher/<publisher_id>')

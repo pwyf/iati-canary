@@ -3,7 +3,12 @@
 
 <h1>{{ publisher.name }}</h1>
 
+{% if publisher.last_checked %}
 <p>{{ publisher.errors | count }} of {{ publisher.total_datasets }} datasets have errors.</p>
+<p>Last checked: {{ publisher.last_checked }}</p>
+{% else %}
+    <p>{{ publisher.total_datasets }} datasets have not yet been checked.</p>
+{% endif %}
 
 <ul>
 {% for error in publisher.errors %}
