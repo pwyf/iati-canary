@@ -4,17 +4,27 @@
 <h1>{{ publisher.name }}</h1>
 
 {% if publisher.last_checked %}
-<p>{{ publisher.errors | count }} of {{ publisher.total_datasets }} datasets have errors.</p>
-<p>Last checked: {{ publisher.last_checked }}</p>
+    <p>{{ publisher.errors | count }} of {{ publisher.total_datasets }} datasets have errors.</p>
 {% else %}
     <p>{{ publisher.total_datasets }} datasets have not yet been checked.</p>
 {% endif %}
 
+{% if publisher.contacts.count() > 0 %}
+    <p>We have {{ publisher.contacts.count() }} contact addresses for this publisher.</p>
+{% else %}
+    <p>Unfortunately, we don’t have a contact address for this publisher.</p>
+{% endif %}
+
 <ul>
 {% for error in publisher.errors %}
-  <li>{{ error.dataset_name }} (<a href="{{ error.dataset_url }}" target="_blank">source</a>)</li>
+  <li>{{ error.error_type }}: {{ error.dataset_name }} (<a href="{{ error.dataset_url }}" target="_blank">source</a>)</li>
 {% endfor %}
 </ul>
+
+{% if publisher.last_checked %}
+    <p>Last checked: {{ publisher.last_checked }}</p>
+{% endif %}
+
 
 </body>
 </html>
