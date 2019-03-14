@@ -1,15 +1,11 @@
 <html>
 <body>
 
-<h1>All publishers</h1>
+<h1>IATI Canary</h1>
 
 <ul>
 {% for publisher in publishers %}
-  <li><a href="{{ url_for('iati_canary.publisher', publisher_id=publisher.id) }}">{{ publisher.name }}</a>
-  {% if publisher.last_checked %}
-    (last checked: {{ publisher.last_checked }})
-  {% endif %}
-  </li>
+  <li><a href="{{ url_for('iati_canary.publisher', publisher_id=publisher.id) }}">{{ publisher.name }}</a> – {{ publisher.count }} errors</li>
 {% endfor %}
 </ul>
 
