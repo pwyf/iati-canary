@@ -13,4 +13,5 @@ def create_app(config_object='iati_canary.settings'):
     app.cli.add_command(commands.refresh_schemas)
     app.cli.add_command(commands.refresh_metadata)
     app.cli.add_command(commands.validate)
+    app.cli.add_command(commands.expunge)
     return app

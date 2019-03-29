@@ -1,6 +1,6 @@
 from os.path import join
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import iatikit
 import click
@@ -85,3 +85,16 @@ def validate(count):
         validate_publisher_datasets(publisher.id)
         publisher.last_checked = datetime.now()
         publisher.save()
+
+
+@click.command()
+@click.option('--days-ago', type=int, default=5)
+def expunge(days_ago):
+    '''Validate datasets, and add errors to database.'''
+    errors = (models.DatasetError
+              .select(models.DatasetError, models.Publisher)
+              .join(models.Publisher))
+    for error in errors:
+        ref_datetime = error.publisher.last_checked - timedelta(days=5)
+        if error.last_seen_at < ref_datetime:
+            error.delete_instance()
