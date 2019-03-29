@@ -17,7 +17,7 @@
 
 <ul>
 {% for error in publisher.errors %}
-  <li>{{ error.error_type }}: {{ error.dataset_name }} (<a href="{{ error.dataset_url }}" target="_blank">source</a>)</li>
+  <li>{{ error.error_type }}: {{ error.dataset_name }} (<a href="{{ error.dataset_url }}" target="_blank">source</a>) Seen {{ error.error_count }} times; last seen {{ error.last_seen_at }}</li>
 {% endfor %}
 </ul>
 
