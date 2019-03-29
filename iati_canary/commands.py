@@ -74,7 +74,7 @@ def refresh_metadata():
 
 
 @click.command()
-@click.option('--count', type=int, default=0)
+@click.option('--count', type=int, default=1)
 def validate(count):
     '''Validate datasets, and add errors to database.'''
     publishers = models.Publisher.select().order_by(
