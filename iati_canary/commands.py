@@ -49,7 +49,7 @@ def refresh_metadata():
             'id': publisher.name,
             'name': publisher.metadata.get('title'),
             'total_datasets': len(publisher.datasets),
-            'first_published': first_pub,
+            'first_published_on': first_pub,
         }
         try:
             pub = models.Publisher.get_by_id(publisher.name)
@@ -78,12 +78,13 @@ def refresh_metadata():
 def validate(count):
     '''Validate datasets, and add errors to database.'''
     publishers = models.Publisher.select().order_by(
-        models.Publisher.last_checked.asc(nulls='FIRST'))
+        models.Publisher.queued_at.asc())
     for idx, publisher in enumerate(publishers):
         if idx >= count:
             break
-        publisher.last_checked = datetime.now()
+        publisher.last_checked_at = datetime.now()
         validate_publisher_datasets(publisher.id)
+        publisher.queued_at = datetime.now()
         publisher.save()
 
 
@@ -95,6 +96,6 @@ def expunge(days_ago):
               .select(models.DatasetError, models.Publisher)
               .join(models.Publisher))
     for error in errors:
-        ref_datetime = error.publisher.last_checked - timedelta(days=5)
-        if error.last_seen_at < ref_datetime:
+        ref_datetime = error.publisher.last_checked_at - timedelta(days=5)
+        if error.last_errored_at < ref_datetime:
             error.delete_instance()

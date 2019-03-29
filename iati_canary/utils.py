@@ -46,10 +46,8 @@ def validate_dataset(dataset):
         elif not fresh.validate_iati():
             error = 'schema error'
 
-    if not error:
-        return None
-
-    return models.DatasetError.upsert(
+    models.DatasetError.upsert(
+        success=not error,
         dataset_id=dataset['name'],
         dataset_name=dataset['title'],
         dataset_url=url,

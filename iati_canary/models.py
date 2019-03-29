@@ -19,8 +19,9 @@ class Publisher(CreatedUpdatedMixin, db.Model):
     id = CharField(primary_key=True)
     name = CharField(max_length=1000)
     total_datasets = IntegerField(default=0)
-    first_published = DateField(null=True)
-    last_checked = DateTimeField(null=True)
+    first_published_on = DateField(null=True)
+    last_checked_at = DateTimeField(null=True)
+    queued_at = DateTimeField(null=True, default=datetime.now)
 
 
 class Contact(CreatedUpdatedMixin, db.Model):
@@ -43,18 +44,24 @@ class DatasetError(CreatedUpdatedMixin, db.Model):
                                 on_delete='CASCADE')
     error_type = CharField()
     error_count = IntegerField(default=1)
-    last_seen_at = DateTimeField(default=datetime.now)
+    check_count = IntegerField(default=1)
+    last_errored_at = DateTimeField(default=datetime.now)
 
     @classmethod
-    def upsert(cls, **kwargs):
-        error = cls.get_or_none(dataset_id=kwargs.get('dataset_id'))
-        if not error:
+    def upsert(cls, success, **kwargs):
+        dataset_error = cls.get_or_none(dataset_id=kwargs.get('dataset_id'))
+        if not dataset_error:
+            if success:
+                return
             return cls.create(**kwargs)
-        if error.error_type != kwargs.get('error_type') and \
+        dataset_error.check_count += 1
+        if success:
+            return dataset_error.save()
+        if dataset_error.error_type != kwargs.get('error_type') and \
                 kwargs.get('error_type') == 'schema error':
             # delete old error and replace
-            error.delete().execute()
+            dataset_error.delete_instance()
             return cls.create(**kwargs)
-        error.last_seen_at = datetime.now()
-        error.error_count += 1
-        return error.save()
+        dataset_error.last_errored_at = datetime.now()
+        dataset_error.error_count += 1
+        return dataset_error.save()
