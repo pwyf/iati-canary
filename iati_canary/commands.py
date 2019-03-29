@@ -82,8 +82,8 @@ def validate(count):
     for idx, publisher in enumerate(publishers):
         if idx >= count:
             break
-        validate_publisher_datasets(publisher.id)
         publisher.last_checked = datetime.now()
+        validate_publisher_datasets(publisher.id)
         publisher.save()
 
 
