@@ -1,14 +1,181 @@
-{% extends "layout.html" %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block content %}
-<div class="row">
-  <div class="col-lg-6">
-    <h1 class="mt-5">IATI Canary</h1>
-    <ul>
-    {% for publisher in publishers %}
-      <li><a href="{{ url_for('iati_canary.publisher', publisher_id=publisher.id) }}">{{ publisher.name }}</a> – {{ publisher.count }} errors</li>
-    {% endfor %}
-    </ul>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>IATI Canary</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom fonts for this template -->
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.1/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="//fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+  <link href="//fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+
+  <!-- Custom styles for this template -->
+  <link href="{{url_for('static', filename='css/css.css')}}" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg bg-secondary fixed-top text-uppercase" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand js-scroll-trigger" href="#page-top">IATI Canary</a>
+      <button class="navbar-toggler navbar-toggler-right text-uppercase bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        Menu
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item mx-0 mx-lg-1">
+            <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#about">About</a>
+          </li>
+          <li class="nav-item mx-0 mx-lg-1">
+            <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#status">Status</a>
+          </li>
+          <li class="nav-item mx-0 mx-lg-1">
+            <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#sign-up">Sign up</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <header class="masthead bg-primary text-white text-center">
+    <div class="container">
+      <img class="img-fluid mb-5 d-block mx-auto" src="{{url_for('static', filename='img/canary.png')}}" alt="">
+      <h1 class="text-uppercase mb-0">IATI Canary</h1>
+      <hr class="star-light">
+      <h2 class="font-weight-light mb-0">An early warning system for IATI publishers</h2>
+    </div>
+  </header>
+
+  <!-- Contact Section -->
+  <section id="about">
+    <div class="container">
+      <h2 class="text-center text-uppercase text-secondary mb-0">About</h2>
+      <hr class="star-dark mb-5">
+      <div class="row">
+        <div class="col-lg-4 ml-auto">
+          <p class="lead">IATI Canary is a free data monitoring and alert service. It checks to ensure data is both available and compliant with the IATI schema. If there’s a problem, you’ll be notified by email.</p>
+        </div>
+        <div class="col-lg-4 mr-auto">
+          <p class="lead">If you’re an IATI publisher aiming to ensure your data stays accessible, or a data user keeping an eye on data availability, you may find IATI Canary useful.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="bg-primary text-white mb-0" id="status">
+    <div class="container">
+      <h2 class="text-center text-uppercase text-white">Current status</h2>
+      <hr class="star-light mb-5">
+      <div class="row">
+        <div class="col-lg-8 mx-auto">
+          {% block content %}{% endblock %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="sign-up">
+    <div class="container">
+      <h2 class="text-center text-uppercase text-secondary mb-0">Sign up</h2>
+      <hr class="star-dark mb-5">
+      <div class="row">
+        <div class="col-lg-8 mx-auto">
+          <!-- To configure the contact form email address, go to mail/contact_me.php and update the email address in the PHP file on line 19. -->
+          <!-- The form should work on most web servers, but if the form is not working you may need to configure your web server differently. -->
+          <form name="sentMessage" id="contactForm" novalidate="novalidate">
+            <div class="control-group">
+              <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                <label>Name</label>
+                <input class="form-control" id="name" type="text" placeholder="Name" required="required" data-validation-required-message="Please enter your name.">
+                <p class="help-block text-danger"></p>
+              </div>
+            </div>
+            <div class="control-group">
+              <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                <label>Email Address</label>
+                <input class="form-control" id="email" type="email" placeholder="Email Address" required="required" data-validation-required-message="Please enter your email address.">
+                <p class="help-block text-danger"></p>
+              </div>
+            </div>
+            <br>
+            <div id="success"></div>
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary btn-xl" id="sendMessageButton">Send</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer text-center">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 mb-5 mb-lg-0">
+          <h4 class="text-uppercase mb-4">Legal stuff</h4>
+          <p class="lead mb-0">This service is provided “as is”, without warranty of any kind etc.</p>
+        </div>
+        <div class="col-md-4 mb-5 mb-lg-0">
+          <h4 class="text-uppercase mb-4">Contact</h4>
+          <ul class="list-inline mb-0">
+            <li class="list-inline-item">
+              <a class="btn btn-outline-light btn-social text-center rounded-circle" href="https://twitter.com/andylolz">
+                <i class="fab fa-fw fa-twitter"></i>
+              </a>
+            </li>
+            <li class="list-inline-item">
+              <a class="btn btn-outline-light btn-social text-center rounded-circle" href="https://github.com/andylolz/iati-canary/issues">
+                <i class="fab fa-fw fa-github"></i>
+              </a>
+            </li>
+            <li class="list-inline-item">
+              <a class="btn btn-outline-light btn-social text-center rounded-circle" href="https://saythanks.io/to/andylolz">
+                <i class="fas fa-fw fa-heart"></i>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h4 class="text-uppercase mb-4">About the author</h4>
+          <p class="lead mb-0">Andy is a serial contributor to IATI open source code.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
+  <div class="scroll-to-top d-lg-none position-fixed ">
+    <a class="js-scroll-trigger d-block text-center text-white rounded" href="#page-top">
+      <i class="fa fa-chevron-up"></i>
+    </a>
   </div>
-</div>
-{% endblock %}
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+  <!-- Plugin JavaScript -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+
+  <!-- Custom scripts for this template -->
+  <script src="{{url_for('static', filename='js/js.js')}}"></script>
+
+</body>
+
+</html>

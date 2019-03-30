@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-6">
+    <h1 class="mt-5">IATI Canary</h1>
+    <ul>
+    {% for publisher in publishers %}
+      <li><a href="{{ url_for('iati_canary.publisher', publisher_id=publisher.id) }}">{{ publisher.name }}</a> – {{ publisher.count }} errors</li>
+    {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}
