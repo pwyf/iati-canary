@@ -90,8 +90,8 @@ def validate(count):
 
 @click.command()
 @click.option('--days-ago', type=int, default=5)
-def expunge(days_ago):
-    '''Validate datasets, and add errors to database.'''
+def cleanup(days_ago):
+    '''Clean expired errors from the database.'''
     errors = (models.DatasetError
               .select(models.DatasetError, models.Publisher)
               .join(models.Publisher))
