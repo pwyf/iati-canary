@@ -1,7 +1,9 @@
-<html>
-<body>
+{% extends "layout.html" %}
 
-<h1>All publishers</h1>
+{% block content %}
+<div class="row">
+  <div class="col-lg-6">
+    <h1 class="mt-5">All publishers</h1>
 
 <ul>
 {% for publisher in publishers %}
@@ -13,5 +15,6 @@
 {% endfor %}
 </ul>
 
-</body>
-</html>
+    </div>
+</div>
+{% endblock %}
