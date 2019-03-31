@@ -32,7 +32,11 @@ def publishers():
 
 @blueprint.route('/publishers.json')
 def publishers_json():
+    page_size = 20
+
     search = request.args.get('q', '')
+    page = int(request.args.get('page', 1))
+
     publishers = (models.Publisher
                   .select(models.Publisher,
                           fn.Count(models.DatasetError.id)
@@ -43,7 +47,9 @@ def publishers_json():
                          models.Publisher.name.contains(search) |
                          models.Publisher.id.contains(search))
                   .group_by(models.Publisher)
-                  .order_by(fn.Count(models.DatasetError.id).desc()))
+                  .order_by(fn.Count(models.DatasetError.id).desc())
+                  .paginate(page, page_size))
+
     results = [{
         'id': p.id,
         'text': '{name} ({count} broken dataset{plural})'.format(
@@ -53,7 +59,13 @@ def publishers_json():
         ) if p.error_count > 0 else p.name,
         'error_count': p.error_count,
     } for p in publishers]
-    return jsonify({'results': results})
+
+    return jsonify({
+        'results': results,
+        'pagination': {
+            'more': len(results) == page_size
+        }
+    })
 
 
 @blueprint.route('/publisher/<publisher_id>')
