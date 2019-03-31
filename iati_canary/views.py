@@ -1,7 +1,8 @@
 from os.path import join
 
-from flask import abort, Blueprint, render_template, send_from_directory
-from peewee import DoesNotExist, fn
+from flask import abort, Blueprint, render_template, send_from_directory, \
+                  jsonify, request
+from peewee import DoesNotExist, fn, JOIN
 
 from . import models
 
@@ -19,21 +20,39 @@ def favicon():
 
 @blueprint.route('/')
 def home():
-    publishers = (models.Publisher
-                  .select(models.Publisher,
-                          fn.Count(models.DatasetError.id).alias('count'))
-                  .join(models.DatasetError)
-                  .where(models.DatasetError.error_type != 'schema error')
-                  .group_by(models.Publisher)
-                  .order_by(fn.Count(models.DatasetError.id).desc()))
-    return render_template('home.html', publishers=publishers)
+    return render_template('home.html')
 
 
 @blueprint.route('/publishers')
 def publishers():
     publishers = models.Publisher.select().order_by(
-        models.Publisher.last_checked.desc(nulls='LAST'))
+        models.Publisher.last_checked_at.desc(nulls='LAST'))
     return render_template('publishers.html', publishers=publishers)
+
+
+@blueprint.route('/publishers.json')
+def publishers_json():
+    search = request.args.get('q', '')
+    publishers = (models.Publisher
+                  .select(models.Publisher,
+                          fn.Count(models.DatasetError.id)
+                          .alias('error_count'))
+                  .join(models.DatasetError, JOIN.LEFT_OUTER)
+                  .where((models.DatasetError.error_type.is_null()) |
+                         (models.DatasetError.error_type != 'schema error'),
+                         models.Publisher.name.contains(search))
+                  .group_by(models.Publisher)
+                  .order_by(fn.Count(models.DatasetError.id).desc()))
+    results = [{
+      'id': p.id,
+      'text': '{name} ({count} error{plural})'.format(
+        name=p.name,
+        count=p.error_count,
+        plural='' if p.error_count == 1 else 's',
+      ),
+      'error_count': p.error_count,
+    } for p in publishers]
+    return jsonify({'results': results})
 
 
 @blueprint.route('/publisher/<publisher_id>')

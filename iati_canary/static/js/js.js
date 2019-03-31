@@ -60,4 +60,20 @@
     });
   });
 
+  $('select').each(function () {
+    $(this).select2({
+      theme: 'bootstrap4',
+      placeholder: $(this).attr('placeholder'),
+      ajax: {
+        delay: 100,
+        url: '/publishers.json',
+        data: function (params) {
+          return {
+            q: params.term
+          };
+        }
+      }
+    });
+  });
+
 })(jQuery); // End of use strict
