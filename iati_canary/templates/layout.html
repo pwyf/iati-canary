@@ -12,6 +12,8 @@
 
   <!-- Bootstrap core CSS -->
   <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/select2-bootstrap4.min.css') }}" rel="stylesheet">
 
   <!-- Custom fonts for this template -->
   <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.1/css/all.min.css" rel="stylesheet" type="text/css">
@@ -19,107 +21,28 @@
   <link href="//fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
 
   <!-- Custom styles for this template -->
-  <link href="{{url_for('static', filename='css/css.css')}}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/css.css') }}" rel="stylesheet">
+
+  <!-- Favicons -->
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" sizes="32x32" type="image/png">
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon-16x16.png') }}" sizes="16x16" type="image/png">
+  <link rel="icon" href="/favicon.ico">
 
 </head>
 
-<body id="page-top">
+<body>
 
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg bg-secondary fixed-top text-uppercase" id="mainNav">
     <div class="container">
-      <a class="navbar-brand js-scroll-trigger" href="#page-top">IATI Canary</a>
-      <button class="navbar-toggler navbar-toggler-right text-uppercase bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-        Menu
-        <i class="fas fa-bars"></i>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarResponsive">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item mx-0 mx-lg-1">
-            <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#about">About</a>
-          </li>
-          <li class="nav-item mx-0 mx-lg-1">
-            <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#status">Status</a>
-          </li>
-          <li class="nav-item mx-0 mx-lg-1">
-            <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#sign-up">Sign up</a>
-          </li>
-        </ul>
-      </div>
+      <a class="navbar-brand js-scroll-trigger" href="{{ url_for('iati_canary.home') }}">IATI Canary</a>
     </div>
   </nav>
 
-  <!-- Header -->
-  <header class="masthead bg-primary text-white text-center">
-    <div class="container">
-      <img class="img-fluid mb-5 d-block mx-auto" src="{{url_for('static', filename='img/canary.png')}}" alt="">
-      <h1 class="text-uppercase mb-0">IATI Canary</h1>
-      <hr class="star-light">
-      <h2 class="font-weight-light mb-0">An early warning system for IATI data errors</h2>
-    </div>
-  </header>
-
   <!-- Contact Section -->
-  <section id="about">
+  <section id="page">
     <div class="container">
-      <h2 class="text-center text-uppercase text-secondary mb-0">About</h2>
-      <hr class="star-dark mb-5">
-      <div class="row">
-        <div class="col-lg-4 ml-auto">
-          <p class="lead">Freelancer is a free bootstrap theme created by Start Bootstrap. The download includes the complete source files including HTML, CSS, and JavaScript as well as optional LESS stylesheets for easy customization.</p>
-        </div>
-        <div class="col-lg-4 mr-auto">
-          <p class="lead">Whether you're a student looking to showcase your work, a professional looking to attract clients, or a graphic artist looking to share your projects, this template is the perfect starting point!</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- About Section -->
-  <section class="bg-primary text-white mb-0" id="status">
-    <div class="container">
-      <h2 class="text-center text-uppercase text-white">Status</h2>
-      <hr class="star-light mb-5">
-      <div class="row">
-        <div class="col-lg-8 mx-auto">
-          {% block content %}{% endblock %}
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Contact Section -->
-  <section id="sign-up">
-    <div class="container">
-      <h2 class="text-center text-uppercase text-secondary mb-0">Sign up</h2>
-      <hr class="star-dark mb-5">
-      <div class="row">
-        <div class="col-lg-8 mx-auto">
-          <!-- To configure the contact form email address, go to mail/contact_me.php and update the email address in the PHP file on line 19. -->
-          <!-- The form should work on most web servers, but if the form is not working you may need to configure your web server differently. -->
-          <form name="sentMessage" id="contactForm" novalidate="novalidate">
-            <div class="control-group">
-              <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                <label>Name</label>
-                <input class="form-control" id="name" type="text" placeholder="Name" required="required" data-validation-required-message="Please enter your name.">
-                <p class="help-block text-danger"></p>
-              </div>
-            </div>
-            <div class="control-group">
-              <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                <label>Email Address</label>
-                <input class="form-control" id="email" type="email" placeholder="Email Address" required="required" data-validation-required-message="Please enter your email address.">
-                <p class="help-block text-danger"></p>
-              </div>
-            </div>
-            <br>
-            <div id="success"></div>
-            <div class="form-group">
-              <button type="submit" class="btn btn-primary btn-xl" id="sendMessageButton">Send</button>
-            </div>
-          </form>
-        </div>
-      </div>
+      {% block content %}{% endblock %}
     </div>
   </section>
 
@@ -128,12 +51,11 @@
     <div class="container">
       <div class="row">
         <div class="col-md-4 mb-5 mb-lg-0">
-          <h4 class="text-uppercase mb-4">Location</h4>
-          <p class="lead mb-0">2215 John Daniel Drive
-            <br>Clark, MO 65243</p>
+          <h4 class="text-uppercase mb-4">Legal stuff</h4>
+          <p class="lead mb-0">This service is provided “as is”, without warranty of any kind etc.</p>
         </div>
         <div class="col-md-4 mb-5 mb-lg-0">
-          <h4 class="text-uppercase mb-4">Contact me</h4>
+          <h4 class="text-uppercase mb-4">Contact</h4>
           <ul class="list-inline mb-0">
             <li class="list-inline-item">
               <a class="btn btn-outline-light btn-social text-center rounded-circle" href="https://twitter.com/andylolz">
@@ -146,26 +68,19 @@
               </a>
             </li>
             <li class="list-inline-item">
-              <a class="btn btn-outline-light btn-social text-center rounded-circle" href="#">
-                <i class="fab fa-fw fa-dribbble"></i>
+              <a class="btn btn-outline-light btn-social text-center rounded-circle" href="https://saythanks.io/to/andylolz">
+                <i class="fas fa-fw fa-heart"></i>
               </a>
             </li>
           </ul>
         </div>
         <div class="col-md-4">
-          <h4 class="text-uppercase mb-4">About Freelancer</h4>
-          <p class="lead mb-0">Freelance is a free to use, open source Bootstrap theme created by
-            <a href="http://startbootstrap.com">Start Bootstrap</a>.</p>
+          <h4 class="text-uppercase mb-4">About the author</h4>
+          <p class="lead mb-0">Andy is a serial contributor to IATI open source code.</p>
         </div>
       </div>
     </div>
   </footer>
-
-  <div class="copyright py-4 text-center text-white">
-    <div class="container">
-      <small>Copyright &copy; Your Website 2019</small>
-    </div>
-  </div>
 
   <!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
   <div class="scroll-to-top d-lg-none position-fixed ">
@@ -180,9 +95,10 @@
 
   <!-- Plugin JavaScript -->
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 
   <!-- Custom scripts for this template -->
-  <script src="{{url_for('static', filename='js/js.js')}}"></script>
+  <script src="{{ url_for('static', filename='js/js.js') }}"></script>
 
 </body>
 

@@ -166,7 +166,7 @@ section h2 {
   }
 }
 
-header.masthead {
+header.masthead, section#page {
   padding-top: calc(6rem + 72px);
   padding-bottom: 6rem;
 }

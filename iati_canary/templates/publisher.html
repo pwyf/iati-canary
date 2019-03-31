@@ -1,9 +1,12 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<h2 class="text-center text-uppercase text-secondary mb-0">{{ publisher.name }}</h2>
+<hr class="star-dark mb-5">
+
 <div class="row">
   <div class="col-lg-6">
-    <h1 class="mt-5">{{ publisher.name }}</h1>
+    <h1 class="mt-5"></h1>
 
 {% if publisher.last_checked_at %}
     <p>{{ publisher.errors | count }} of {{ publisher.total_datasets }} datasets have errors.</p>
@@ -11,10 +14,12 @@
     <p>{{ publisher.total_datasets }} datasets have not yet been checked.</p>
 {% endif %}
 
-{% if publisher.contacts.count() > 0 %}
-    <p>We have {{ publisher.contacts.count() }} contact addresses for this publisher.</p>
-{% else %}
+{% if publisher.contacts.count() == 0 %}
     <p>Unfortunately, we don’t have a contact address for this publisher.</p>
+{% elif publisher.contacts.count() == 1 %}
+    <p>We have 1 contact address for this publisher.</p>
+{% else %}
+    <p>We have {{ publisher.contacts.count() }} contact addresses for this publisher.</p>
 {% endif %}
 
 <ul>
