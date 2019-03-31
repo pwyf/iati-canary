@@ -46,7 +46,7 @@ def publishers_json():
                   .where(models.Publisher.name.contains(search) |
                          models.Publisher.id.contains(search))
                   .group_by(models.Publisher.id)
-                  .order_by(SQL('error_count').desc())
+                  .order_by(SQL('error_count').desc(), models.Publisher.name)
                   .paginate(page, page_size))
 
     results = [{
