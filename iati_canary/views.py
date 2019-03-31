@@ -45,13 +45,13 @@ def publishers_json():
                   .group_by(models.Publisher)
                   .order_by(fn.Count(models.DatasetError.id).desc()))
     results = [{
-      'id': p.id,
-      'text': '{name} ({count} error{plural})'.format(
-        name=p.name,
-        count=p.error_count,
-        plural='' if p.error_count == 1 else 's',
-      ),
-      'error_count': p.error_count,
+        'id': p.id,
+        'text': '{name} ({count} broken dataset{plural})'.format(
+            name=p.name,
+            count=p.error_count,
+            plural='s' if p.error_count != 1 else '',
+        ),
+        'error_count': p.error_count,
     } for p in publishers]
     return jsonify({'results': results})
 
