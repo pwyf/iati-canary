@@ -65,12 +65,7 @@
     placeholder: $('#select-publisher').attr('placeholder'),
     ajax: {
       delay: 100,
-      url: '/publishers.json',
-      data: function (params) {
-        return {
-          q: params.term
-        };
-      }
+      url: '/publishers.json'
     }
   });
 
