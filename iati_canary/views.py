@@ -1,4 +1,6 @@
-from flask import abort, Blueprint, render_template
+from os.path import join
+
+from flask import abort, Blueprint, render_template, send_from_directory
 from peewee import DoesNotExist, fn
 
 from . import models
@@ -6,6 +8,13 @@ from . import models
 
 blueprint = Blueprint('iati_canary', __name__,
                       static_folder='../static')
+
+
+@blueprint.route('/favicon.ico')
+def favicon():
+    return send_from_directory(join('static', 'img'),
+                               'favicon.ico',
+                               mimetype='image/vnd.microsoft.icon')
 
 
 @blueprint.route('/')
