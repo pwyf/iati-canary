@@ -60,20 +60,23 @@
     });
   });
 
-  $('select').each(function () {
-    $(this).select2({
-      theme: 'bootstrap4',
-      placeholder: $(this).attr('placeholder'),
-      ajax: {
-        delay: 100,
-        url: '/publishers.json',
-        data: function (params) {
-          return {
-            q: params.term
-          };
-        }
+  var orgSelect = $('#select-publisher').select2({
+    theme: 'bootstrap4',
+    placeholder: $('#select-publisher').attr('placeholder'),
+    ajax: {
+      delay: 100,
+      url: '/publishers.json',
+      data: function (params) {
+        return {
+          q: params.term
+        };
       }
-    });
+    }
   });
+
+  orgSelect.on('select2:select', function (e) {
+    window.location = '/publisher/' + e.params.data.id;
+  })
+
 
 })(jQuery); // End of use strict
