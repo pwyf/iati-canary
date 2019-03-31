@@ -73,4 +73,7 @@ def publisher(publisher_id):
         publisher = models.Publisher.get_by_id(publisher_id)
     except DoesNotExist:
         return abort(404)
-    return render_template('publisher.html', publisher=publisher)
+    errors = publisher.errors.where(models.DatasetError.error_type != 'schema')
+    return render_template('publisher.html',
+                           publisher=publisher,
+                           errors=errors)

@@ -8,7 +8,7 @@
   <div class="col-lg-6">
 
 {% if publisher.last_checked_at %}
-    <p>{{ publisher.errors | count }} of {{ publisher.total_datasets }} datasets have errors.</p>
+    <p>{{ errors | count }} of {{ publisher.total_datasets }} datasets have errors.</p>
 {% else %}
     <p>{{ publisher.total_datasets }} datasets have not yet been checked.</p>
 {% endif %}
@@ -22,7 +22,7 @@
 {% endif %}
 
 <ul>
-{% for error in publisher.errors %}
+{% for error in errors %}
   <li>{{ error.error_type }}: {{ error.dataset_name }} (<a href="{{ error.dataset_url }}" target="_blank">source</a>) Seen {{ error.error_count }} times; last seen {{ error.last_errored_at }}</li>
 {% endfor %}
 </ul>
