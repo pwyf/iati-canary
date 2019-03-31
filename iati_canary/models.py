@@ -43,6 +43,7 @@ class DatasetError(CreatedUpdatedMixin, db.Model):
     publisher = ForeignKeyField(Publisher, backref='errors',
                                 on_delete='CASCADE')
     error_type = CharField()
+    last_status = CharField(default='fail')
     error_count = IntegerField(default=1)
     check_count = IntegerField(default=1)
     last_errored_at = DateTimeField(default=datetime.now)
@@ -56,7 +57,9 @@ class DatasetError(CreatedUpdatedMixin, db.Model):
             return cls.create(**kwargs)
         dataset_error.check_count += 1
         if success:
+            dataset_error.last_status = 'success'
             return dataset_error.save()
+        dataset_error.last_status = 'fail'
         if dataset_error.error_type != kwargs.get('error_type') and \
                 kwargs.get('error_type') == 'schema error':
             # delete old error and replace
