@@ -39,7 +39,7 @@ def publishers_json():
                           .alias('error_count'))
                   .join(models.DatasetError, JOIN.LEFT_OUTER)
                   .where((models.DatasetError.error_type.is_null()) |
-                         (models.DatasetError.error_type != 'schema error'),
+                         (models.DatasetError.error_type != 'schema'),
                          models.Publisher.name.contains(search) |
                          models.Publisher.id.contains(search))
                   .group_by(models.Publisher)

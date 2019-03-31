@@ -35,16 +35,16 @@ def validate_dataset(dataset):
         resp = requests.get(url, verify=False,
                             headers={'User-Agent': 'IATI Canary'})
         if str(resp.status_code)[0] != '2':
-            error = 'download error'
+            error = 'download'
     except requests.exceptions.ConnectionError:
-        error = 'download error'
+        error = 'download'
 
     if not error:
         fresh = iatikit.Dataset(BytesIO(resp.content))
         if not fresh.validate_xml():
-            error = 'xml error'
+            error = 'xml'
         elif not fresh.validate_iati():
-            error = 'schema error'
+            error = 'schema'
 
     models.DatasetError.upsert(
         success=not error,

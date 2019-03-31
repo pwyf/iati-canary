@@ -61,7 +61,7 @@ class DatasetError(CreatedUpdatedMixin, db.Model):
             return dataset_error.save()
         dataset_error.last_status = 'fail'
         if dataset_error.error_type != kwargs.get('error_type') and \
-                kwargs.get('error_type') == 'schema error':
+                kwargs.get('error_type') == 'schema':
             # delete old error and replace
             dataset_error.delete_instance()
             return cls.create(**kwargs)
