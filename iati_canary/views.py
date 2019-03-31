@@ -50,7 +50,7 @@ def publishers_json():
             name=p.name,
             count=p.error_count,
             plural='s' if p.error_count != 1 else '',
-        ),
+        ) if p.error_count > 0 else p.name,
         'error_count': p.error_count,
     } for p in publishers]
     return jsonify({'results': results})
