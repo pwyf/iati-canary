@@ -2,7 +2,7 @@ from os.path import join
 
 from flask import abort, Blueprint, render_template, send_from_directory, \
                   jsonify, request
-from peewee import DoesNotExist, fn, JOIN
+from peewee import DoesNotExist, fn, JOIN, SQL
 
 from . import models
 
@@ -39,15 +39,14 @@ def publishers_json():
 
     publishers = (models.Publisher
                   .select(models.Publisher,
-                          fn.Count(models.DatasetError.id)
+                          fn.COUNT(models.DatasetError.id)
+                          .filter(models.DatasetError.error_type != 'schema')
                           .alias('error_count'))
                   .join(models.DatasetError, JOIN.LEFT_OUTER)
-                  .where((models.DatasetError.error_type.is_null()) |
-                         (models.DatasetError.error_type != 'schema'),
-                         models.Publisher.name.contains(search) |
+                  .where(models.Publisher.name.contains(search) |
                          models.Publisher.id.contains(search))
-                  .group_by(models.Publisher)
-                  .order_by(fn.Count(models.DatasetError.id).desc())
+                  .group_by(models.Publisher.id)
+                  .order_by(SQL('error_count').desc())
                   .paginate(page, page_size))
 
     results = [{
