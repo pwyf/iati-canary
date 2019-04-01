@@ -16,8 +16,8 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Error type</th>
-            <th>Dataset name</th>
+            <th></th>
+            <th>Dataset</th>
             <th>Status</th>
         </tr>
     </thead>
@@ -25,13 +25,21 @@
 {% for error in errors %}
         <tr>
             <td>
-                {{ error.error_type }}
+                <a href="{{ error.dataset_url }}" target="_blank"><i class="fas fa-cloud-download-alt"></i></a>
             </td>
             <td>
-                <a href="https://iatiregistry.org/dataset/{{ error.dataset_id }}">{{ error.dataset_name }}</a> (<a href="{{ error.dataset_url }}" target="_blank">source</a>)
+                <a href="https://iatiregistry.org/dataset/{{ error.dataset_id }}">{{ error.dataset_name }}</a>
             </td>
             <td>
-                Last errored {{ error.last_errored_at }}
+                {% if error.last_status == 'success' %}
+                    Recently fixed
+                {% elif error.error_type == 'download' %}
+                    Couldn’t download
+                {% elif error.error_type == 'xml' %}
+                    Couldn’t parse XML
+                {% else %}
+                    Couldn’t validate against the IATI schema
+                {% endif %}
             </td>
         </tr>
 {% endfor %}
