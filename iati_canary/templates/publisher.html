@@ -5,7 +5,7 @@
 <hr class="star-dark mb-5">
 
 <div class="row">
-  <div class="col-lg-6">
+  <div class="col-lg-12">
 
 {% if publisher.last_checked_at %}
     <p>{{ errors | count }} of {{ publisher.total_datasets }} datasets have errors.</p>
@@ -13,19 +13,30 @@
     <p>{{ publisher.total_datasets }} datasets have not yet been checked.</p>
 {% endif %}
 
-{% if publisher.contacts.count() == 0 %}
-    <p>Unfortunately, we don’t have a contact address for this publisher.</p>
-{% elif publisher.contacts.count() == 1 %}
-    <p>We have 1 contact address for this publisher.</p>
-{% else %}
-    <p>We have {{ publisher.contacts.count() }} contact addresses for this publisher.</p>
-{% endif %}
-
-<ul>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Error type</th>
+            <th>Dataset name</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
 {% for error in errors %}
-  <li>{{ error.error_type }}: {{ error.dataset_name }} (<a href="{{ error.dataset_url }}" target="_blank">source</a>) Seen {{ error.error_count }} times; last seen {{ error.last_errored_at }}</li>
+        <tr>
+            <td>
+                {{ error.error_type }}
+            </td>
+            <td>
+                <a href="https://iatiregistry.org/dataset/{{ error.dataset_id }}">{{ error.dataset_name }}</a> (<a href="{{ error.dataset_url }}" target="_blank">source</a>)
+            </td>
+            <td>
+                Last errored {{ error.last_errored_at }}
+            </td>
+        </tr>
 {% endfor %}
-</ul>
+    </tbody>
+</table>
 
 {% if publisher.last_checked_at %}
     <p>Last checked: {{ publisher.last_checked_at }}</p>
