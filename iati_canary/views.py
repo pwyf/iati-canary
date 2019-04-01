@@ -41,7 +41,7 @@ def home():
     total_dataset_errors = (
         models.DatasetError
         .select(
-            fn.COUNT(fn.DISTINCT(models.DatasetError.publisher_id))
+            fn.COUNT(models.DatasetError.id)
             .alias('total'))
         .where(models.DatasetError.error_type != 'schema',
                models.DatasetError.last_status == 'fail')
