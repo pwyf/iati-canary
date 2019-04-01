@@ -39,7 +39,18 @@
   // Collapse the navbar when page is scrolled
   $(window).scroll(navbarCollapse);
 
-  var orgSelect = $('#select-publisher').select2({
+  $('#show-publisher').select2({
+    theme: 'bootstrap4',
+    placeholder: $('#show-publisher').attr('placeholder'),
+    ajax: {
+      delay: 100,
+      url: '/publishers.json'
+    }
+  }).on('select2:select', function (e) {
+    window.location = '/publisher/' + e.params.data.id;
+  });
+
+  $('#select-publisher').select2({
     theme: 'bootstrap4',
     placeholder: $('#select-publisher').attr('placeholder'),
     ajax: {
@@ -47,10 +58,5 @@
       url: '/publishers.json'
     }
   });
-
-  orgSelect.on('select2:select', function (e) {
-    window.location = '/publisher/' + e.params.data.id;
-  })
-
 
 })(jQuery); // End of use strict

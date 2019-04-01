@@ -94,7 +94,7 @@
 
           <div class="form-group form-group-lg">
             <label class="lead">Search by publisher:</label>
-            <select class="form-control form-control-lg" id="select-publisher" placeholder="e.g. Publish What You Fund"></select>
+            <select class="form-control form-control-lg" id="show-publisher" placeholder="e.g. Publish What You Fund"></select>
           </div>
         </div>
       </div>
@@ -108,27 +108,33 @@
       <hr class="star-dark mb-5">
       <div class="row">
         <div class="col-lg-8 mx-auto">
-          <!-- To configure the contact form email address, go to mail/contact_me.php and update the email address in the PHP file on line 19. -->
-          <!-- The form should work on most web servers, but if the form is not working you may need to configure your web server differently. -->
+          <p class="lead">Receive email notifications when a publisher’s datasets break.</p>
+
           <form name="sentMessage" id="contactForm" novalidate="novalidate">
             <div class="control-group">
-              <div class="form-group floating-label-form-group controls mb-0 pb-2">
+              <div class="form-group form-group-lg mb-0 pb-2">
                 <label>Name</label>
-                <input class="form-control" id="name" type="text" placeholder="Name" required="required" data-validation-required-message="Please enter your name.">
+                <input class="form-control form-control-lg" id="name" type="text" placeholder="Name" required="required" data-validation-required-message="Please enter your name.">
                 <p class="help-block text-danger"></p>
               </div>
             </div>
             <div class="control-group">
-              <div class="form-group floating-label-form-group controls mb-0 pb-2">
+              <div class="form-group form-group-lg mb-0 pb-2">
                 <label>Email Address</label>
-                <input class="form-control" id="email" type="email" placeholder="Email Address" required="required" data-validation-required-message="Please enter your email address.">
+                <input class="form-control form-control-lg" id="email" type="email" placeholder="Email Address" required="required" data-validation-required-message="Please enter your email address.">
                 <p class="help-block text-danger"></p>
+              </div>
+            </div>
+            <div class="control-group">
+              <div class="form-group form-group-lg">
+                <label>Publisher</label>
+                <select class="form-control form-control-lg" id="select-publisher" placeholder="e.g. Publish What You Fund"></select>
               </div>
             </div>
             <br>
             <div id="success"></div>
             <div class="form-group">
-              <button type="submit" class="btn btn-primary btn-xl" id="sendMessageButton">Sign up</button>
+              <button type="submit" class="btn btn-primary btn-xl" disabled="disabled" id="sendMessageButton">Sign up</button>
             </div>
           </form>
         </div>
