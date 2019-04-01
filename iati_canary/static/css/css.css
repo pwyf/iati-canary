@@ -303,7 +303,7 @@ a:focus, a:hover, a:active {
   color: #2C3E50 !important;
 }
 
-.btn-primary {
+.btn-primary, .btn-primary.disabled, .btn-primary:disabled {
   background-color: #1D9088;
   border-color: #1D9088;
 }
