@@ -89,7 +89,7 @@
       <hr class="star-light mb-5">
       <div class="row">
         <div class="col-lg-8 mx-auto">
-          <p class="lead">{{ total_dataset_errors|commify }} of {{ total_datasets|commify }} datasets on the registry are currently broken.</p>
+          <p class="lead">{{ total_dataset_errors|commify }} of {{ total_datasets|commify }} datasets on the registry are currently broken (a further {{ total_dataset_schema_errors|commify }} datasets are not valid against the IATI schema).</p>
           <p class="lead">{{ total_pub_errors|commify }} of {{ total_publishers|commify }} publishers have broken datasets.</p>
 
           <div class="form-group form-group-lg">

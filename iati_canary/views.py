@@ -46,11 +46,21 @@ def home():
         .where(models.DatasetError.error_type != 'schema',
                models.DatasetError.last_status == 'fail')
     ).first().total
-    return render_template('home.html',
-                           total_publishers=total_publishers,
-                           total_pub_errors=total_pub_errors,
-                           total_datasets=total_datasets,
-                           total_dataset_errors=total_dataset_errors)
+    total_dataset_schema_errors = (
+        models.DatasetError
+        .select(
+            fn.COUNT(models.DatasetError.id)
+            .alias('total'))
+        .where(models.DatasetError.error_type == 'schema',
+               models.DatasetError.last_status == 'fail')
+    ).first().total
+    return render_template(
+        'home.html',
+        total_publishers=total_publishers,
+        total_pub_errors=total_pub_errors,
+        total_datasets=total_datasets,
+        total_dataset_errors=total_dataset_errors,
+        total_dataset_schema_errors=total_dataset_schema_errors)
 
 
 @blueprint.route('/publishers')
