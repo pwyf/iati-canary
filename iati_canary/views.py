@@ -20,7 +20,37 @@ def favicon():
 
 @blueprint.route('/')
 def home():
-    return render_template('home.html')
+    total_publishers = (
+        models.Publisher
+        .select(fn.COUNT(models.Publisher.id)
+                .alias('total'))
+    ).first().total
+    total_datasets = (
+        models.Publisher
+        .select(fn.SUM(models.Publisher.total_datasets)
+                .alias('total'))
+    ).first().total
+    total_pub_errors = (
+        models.DatasetError
+        .select(
+            fn.COUNT(fn.DISTINCT(models.DatasetError.publisher_id))
+            .alias('total'))
+        .where(models.DatasetError.error_type != 'schema',
+               models.DatasetError.last_status == 'fail')
+    ).first().total
+    total_dataset_errors = (
+        models.DatasetError
+        .select(
+            fn.COUNT(fn.DISTINCT(models.DatasetError.publisher_id))
+            .alias('total'))
+        .where(models.DatasetError.error_type != 'schema',
+               models.DatasetError.last_status == 'fail')
+    ).first().total
+    return render_template('home.html',
+                           total_publishers=total_publishers,
+                           total_pub_errors=total_pub_errors,
+                           total_datasets=total_datasets,
+                           total_dataset_errors=total_dataset_errors)
 
 
 @blueprint.route('/publishers')

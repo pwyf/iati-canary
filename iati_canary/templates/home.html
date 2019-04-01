@@ -89,8 +89,11 @@
       <hr class="star-light mb-5">
       <div class="row">
         <div class="col-lg-8 mx-auto">
+          <p class="lead">{{ total_dataset_errors|commify }} of {{ total_datasets|commify }} datasets on the registry are currently broken.</p>
+          <p class="lead">{{ total_pub_errors|commify }} of {{ total_publishers|commify }} publishers have broken datasets.</p>
+
           <div class="form-group form-group-lg">
-            <label class="lead">Select a publisher</label>
+            <label class="lead">Search by publisher:</label>
             <select class="form-control form-control-lg" id="select-publisher" placeholder="e.g. Publish What You Fund"></select>
           </div>
         </div>
