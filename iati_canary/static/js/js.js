@@ -44,7 +44,22 @@
     placeholder: $('#show-publisher').attr('placeholder'),
     ajax: {
       delay: 100,
-      url: '/publishers.json'
+      url: '/publishers.json?errors=true',
+      processResults: function (data) {
+        data.results = $.map(data.results, function (d) {
+          var text = d.text;
+          if (d.error_count === 1) {
+            text += ' (1 broken dataset)';
+          } else if (d.error_count > 1) {
+            text += ' (' + d.error_count + ' broken datasets)';
+          }
+          return {
+            id: d.id,
+            text: text
+          };
+        });
+        return data;
+      }
     }
   }).on('select2:select', function (e) {
     window.location = '/publisher/' + e.params.data.id;
