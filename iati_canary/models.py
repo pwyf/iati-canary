@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from peewee import (CharField, DateField, DateTimeField,
-                    ForeignKeyField, IntegerField)
+                    ForeignKeyField, IntegerField,
+                    BooleanField, TextField)
 
 from .extensions import db
 
@@ -15,20 +16,23 @@ class CreatedUpdatedMixin(db.Model):
         return super(CreatedUpdatedMixin, self).save(*args, **kwargs)
 
 
-class Publisher(CreatedUpdatedMixin, db.Model):
+class Publisher(CreatedUpdatedMixin):
     id = CharField(primary_key=True)
-    name = CharField(max_length=1000)
+    name = TextField()
     total_datasets = IntegerField(default=0)
     first_published_on = DateField(null=True)
     last_checked_at = DateTimeField(null=True)
     queued_at = DateTimeField(null=True, default=datetime.now)
 
 
-class Contact(CreatedUpdatedMixin, db.Model):
-    email = CharField()
+class Contact(CreatedUpdatedMixin):
+    name = TextField()
+    email = TextField()
     publisher = ForeignKeyField(Publisher, backref='contacts',
                                 on_delete='CASCADE')
-    dataset_id = CharField(null=True)
+    active = BooleanField(default=True)
+    confirmed_at = DateTimeField(null=True)
+    last_messaged_at = DateTimeField(null=True)
 
     class Meta:
         indexes = (
@@ -36,9 +40,9 @@ class Contact(CreatedUpdatedMixin, db.Model):
         )
 
 
-class DatasetError(CreatedUpdatedMixin, db.Model):
+class DatasetError(CreatedUpdatedMixin):
     dataset_id = CharField(unique=True)
-    dataset_name = CharField(max_length=1000)
+    dataset_name = TextField()
     dataset_url = CharField()
     publisher = ForeignKeyField(Publisher, backref='errors',
                                 on_delete='CASCADE')
