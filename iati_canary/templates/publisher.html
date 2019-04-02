@@ -8,11 +8,12 @@
   <div class="col-lg-12">
 
 {% if publisher.last_checked_at %}
-    <p>{{ errors | count }} of {{ publisher.total_datasets }} datasets have errors.</p>
+    <p>{{ errors | count }} of {{ publisher.total_datasets }} datasets have issues.</p>
 {% else %}
     <p>{{ publisher.total_datasets }} datasets have not yet been checked.</p>
 {% endif %}
 
+{% if errors %}
 <table class="table">
     <thead>
         <tr>
@@ -36,15 +37,16 @@
                 {% elif error.error_type == 'download' %}
                     Couldn’t download
                 {% elif error.error_type == 'xml' %}
-                    Couldn’t parse XML
+                    Not valid XML
                 {% else %}
-                    Couldn’t validate against the IATI schema
+                    Not valid against IATI schema <a href="http://validator.iatistandard.org/index.php?url={{ error.dataset_url }}" target="_blank">(validate)</a>
                 {% endif %}
             </td>
         </tr>
 {% endfor %}
     </tbody>
 </table>
+{% endif %}
 
 {% if publisher.last_checked_at %}
     <p>Last checked: {{ publisher.last_checked_at }}</p>
