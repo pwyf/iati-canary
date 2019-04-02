@@ -1,7 +1,7 @@
 from flask import Flask
 
 from . import views, commands
-from .extensions import db, cache_buster
+from .extensions import db, cache_buster, mail
 
 
 def create_app(config_object='iati_canary.settings'):
@@ -10,6 +10,7 @@ def create_app(config_object='iati_canary.settings'):
     app.register_blueprint(views.blueprint)
     db.init_app(app)
     cache_buster.init_app(app)
+    mail.init_app(app)
     register_filters(app)
     register_commands(app)
     return app
