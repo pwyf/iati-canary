@@ -84,7 +84,7 @@
         "iatikit": {
             "editable": true,
             "git": "https://github.com/pwyf/iatikit.git",
-            "ref": "d94bb519b413e286fb2321fafdb3585618078be6"
+            "ref": "2f1f8734f2ae9608d18da226491c6c5575fe2191"
         },
         "idna": {
             "hashes": [
