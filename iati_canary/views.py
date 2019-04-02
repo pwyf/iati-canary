@@ -1,7 +1,7 @@
 from os.path import join
 
 from flask import abort, Blueprint, render_template, send_from_directory, \
-                  jsonify, request
+                  jsonify, request, redirect, url_for, flash
 from peewee import DoesNotExist, fn, JOIN, SQL
 
 from . import models
@@ -9,6 +9,12 @@ from . import models
 
 blueprint = Blueprint('iati_canary', __name__,
                       static_folder='../static')
+
+
+@blueprint.route('/signup', methods=['POST'])
+def signup():
+    flash('Sign up isn’t possible yet. Sorry!', 'danger')
+    return redirect(url_for('iati_canary.home') + '#sign-up')
 
 
 @blueprint.route('/favicon.ico')
