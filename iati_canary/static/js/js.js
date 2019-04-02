@@ -49,9 +49,9 @@
         data.results = $.map(data.results, function (d) {
           var text = d.text;
           if (d.error_count === 1) {
-            text += ' (1 dataset with issues)';
+            text += ' (1 broken dataset)';
           } else if (d.error_count > 1) {
-            text += ' (' + d.error_count + ' datasets with issues)';
+            text += ' (' + d.error_count + ' broken datasets)';
           }
           return {
             id: d.id,

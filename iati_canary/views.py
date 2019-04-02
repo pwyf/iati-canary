@@ -88,8 +88,8 @@ def publishers_json():
         publishers = (models.Publisher
                       .select(models.Publisher,
                               fn.COUNT(models.DatasetError.id)
-                              .filter(models.DatasetError.last_status ==
-                                      'fail')
+                              .filter(models.DatasetError.error_type !=
+                                      'schema')
                               .alias('error_count'))
                       .join(models.DatasetError, JOIN.LEFT_OUTER)
                       .where(models.Publisher.name.contains(search) |
@@ -129,7 +129,7 @@ def publisher(publisher_id):
         publisher = models.Publisher.get_by_id(publisher_id)
     except DoesNotExist:
         return abort(404)
-    errors = publisher.errors
+    errors = publisher.errors.where(models.DatasetError.error_type != 'schema')
     return render_template('publisher.html',
                            publisher=publisher,
                            errors=errors)
