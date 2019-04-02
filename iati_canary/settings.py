@@ -12,3 +12,5 @@ ENV = env.str('FLASK_ENV', default='production')
 DEBUG = ENV == 'development'
 
 DATABASE = env.str('DATABASE_URL')
+
+SECRET_KEY = env.str('SECRET_KEY')
