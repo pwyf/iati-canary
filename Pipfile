@@ -15,7 +15,8 @@ gunicorn = "*"
 psycopg2-binary = "*"
 iatikit = {editable = true,git = "https://github.com/pwyf/iatikit.git",ref = "dev"}
 flask-cachebuster = "*"
-flask-mail = "*"
+flask-sendgrid = "*"
+sendgrid = "<6"
 
 [requires]
 python_version = "3.6"
