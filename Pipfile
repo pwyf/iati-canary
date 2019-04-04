@@ -13,7 +13,7 @@ peewee = "*"
 environs = "*"
 gunicorn = "*"
 psycopg2-binary = "*"
-iatikit = {editable = true,git = "https://github.com/pwyf/iatikit.git",ref = "dev"}
+iatikit = "*"
 flask-cachebuster = "*"
 flask-sendgrid = "*"
 sendgrid = "<6"
