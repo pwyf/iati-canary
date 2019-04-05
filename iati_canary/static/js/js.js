@@ -40,7 +40,7 @@
   $(window).scroll(navbarCollapse);
 
   $('#show-publisher').select2({
-    theme: 'bootstrap4',
+    theme: 'bootstrap',
     placeholder: $('#show-publisher').attr('placeholder'),
     ajax: {
       delay: 100,
@@ -66,7 +66,7 @@
   });
 
   $('#select-publisher').select2({
-    theme: 'bootstrap4',
+    theme: 'bootstrap',
     placeholder: $('#select-publisher').attr('placeholder'),
     ajax: {
       delay: 100,
