@@ -15,8 +15,7 @@ gunicorn = "*"
 psycopg2-binary = "*"
 iatikit = "*"
 flask-cachebuster = "*"
-flask-sendgrid = "*"
-sendgrid = "<6"
+flask-mailgun3 = "*"
 
 [requires]
 python_version = "3.6"
