@@ -2,9 +2,10 @@ from os.path import join
 
 from flask import abort, Blueprint, render_template, send_from_directory, \
                   jsonify, request, redirect, url_for, flash
-from peewee import DoesNotExist, fn, JOIN, SQL
+from sqlalchemy_mixins import ModelNotFoundError
 
 from . import models
+from .extensions import db
 
 
 blueprint = Blueprint('iati_canary', __name__,
@@ -26,40 +27,29 @@ def favicon():
 
 @blueprint.route('/')
 def home():
-    total_publishers = (
-        models.Publisher
-        .select(fn.COUNT(models.Publisher.id)
-                .alias('total'))
-    ).first().total
-    total_datasets = (
-        models.Publisher
-        .select(fn.SUM(models.Publisher.total_datasets)
-                .alias('total'))
-    ).first().total
-    total_pub_errors = (
-        models.DatasetError
-        .select(
-            fn.COUNT(fn.DISTINCT(models.DatasetError.publisher_id))
-            .alias('total'))
-        .where(models.DatasetError.error_type != 'schema',
-               models.DatasetError.last_status == 'fail')
-    ).first().total
-    total_dataset_errors = (
-        models.DatasetError
-        .select(
-            fn.COUNT(models.DatasetError.id)
-            .alias('total'))
-        .where(models.DatasetError.error_type != 'schema',
-               models.DatasetError.last_status == 'fail')
-    ).first().total
-    total_dataset_schema_errors = (
-        models.DatasetError
-        .select(
-            fn.COUNT(models.DatasetError.id)
-            .alias('total'))
-        .where(models.DatasetError.error_type == 'schema',
-               models.DatasetError.last_status == 'fail')
-    ).first().total
+    total_publishers = models.Publisher.query.count()
+    total_datasets = db.session.query(
+        db.func.SUM(models.Publisher.total_datasets)
+    ).first()[0]
+    models.DatasetError.where(error_type__ne='schema', last_status='fail')
+    total_pub_errors = (models.DatasetError
+                        .where(error_type__ne='schema',
+                               last_status='fail')
+                        .distinct(models.DatasetError.publisher_id)
+                        .count()
+                        )
+    total_dataset_errors = (models.DatasetError
+                            .where(error_type__ne='schema',
+                                   last_status='fail')
+                            .distinct(models.DatasetError.id)
+                            .count()
+                            )
+    total_dataset_schema_errors = (models.DatasetError
+                                   .where(error_type='schema',
+                                          last_status='fail')
+                                   .distinct(models.DatasetError.id)
+                                   .count()
+                                   )
     return render_template(
         'home.html',
         total_publishers=total_publishers,
@@ -85,41 +75,42 @@ def publishers_json():
     show_errors = request.args.get('errors', False) == 'true'
 
     if show_errors:
-        publishers = (models.Publisher
-                      .select(models.Publisher,
-                              fn.COUNT(models.DatasetError.id)
-                              .filter(
-                                (models.DatasetError.error_type != 'schema') &
-                                (models.DatasetError.last_status != 'success'))
-                              .alias('error_count'))
-                      .join(models.DatasetError, JOIN.LEFT_OUTER)
-                      .where(models.Publisher.name.contains(search) |
-                             models.Publisher.id.contains(search))
-                      .group_by(models.Publisher.id)
-                      .order_by(SQL('error_count').desc(),
-                                models.Publisher.name)
-                      .paginate(page, page_size))
+        publishers = (
+            db.session.query(
+                models.Publisher,
+                db.func.COUNT(models.DatasetError.id)
+                .filter(
+                    (models.DatasetError.error_type != 'schema') &
+                    (models.DatasetError.last_status != 'success')))
+            .select_from(models.Publisher)
+            .outerjoin(models.DatasetError)
+            .filter((models.Publisher.name.ilike(f'%{search}%')) |
+                    (models.Publisher.id.ilike(f'%{search}%')))
+            .group_by(models.Publisher.id)
+            .order_by(db.desc(db.text('anon_1')), models.Publisher.name)
+            .paginate(page, page_size)
+        )
         results = [{
             'id': p.id,
             'text': p.name,
-            'error_count': p.error_count,
-        } for p in publishers]
+            'error_count': count,
+        } for p, count in publishers.items]
     else:
-        publishers = (models.Publisher
-                      .select()
-                      .where(models.Publisher.name.contains(search) |
-                             models.Publisher.id.contains(search))
+        publishers = (models.Publisher.query
+                      .filter((models.Publisher.name.ilike(f'%{search}%')) |
+                              (models.Publisher.id.ilike(f'%{search}%')))
                       .order_by(models.Publisher.name)
-                      .paginate(page, page_size))
+                      .paginate(page, page_size)
+                      )
         results = [{
             'id': p.id,
             'text': p.name,
-        } for p in publishers]
+        } for p in publishers.items]
 
     return jsonify({
         'results': results,
         'pagination': {
-            'more': len(results) == page_size
+            'more': publishers.has_next
         }
     })
 
@@ -127,10 +118,9 @@ def publishers_json():
 @blueprint.route('/publisher/<publisher_id>')
 def publisher(publisher_id):
     try:
-        publisher = models.Publisher.get_by_id(publisher_id)
-    except DoesNotExist:
+        publisher = models.Publisher.find_or_fail(publisher_id)
+    except ModelNotFoundError:
         return abort(404)
-    errors = publisher.errors
     return render_template('publisher.html',
                            publisher=publisher,
-                           errors=errors)
+                           errors=publisher.errors)

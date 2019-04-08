@@ -11,7 +11,8 @@ env.read_env()
 ENV = env.str('FLASK_ENV', default='production')
 DEBUG = ENV == 'development'
 
-DATABASE = env.str('DATABASE_URL')
+SQLALCHEMY_DATABASE_URI = env.str('SQLALCHEMY_DATABASE_URI')
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 SECRET_KEY = env.str('SECRET_KEY')
 

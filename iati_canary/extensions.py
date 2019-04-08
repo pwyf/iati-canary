@@ -1,8 +1,10 @@
 from flask_cachebuster import CacheBuster
-from playhouse.flask_utils import FlaskDB
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from flask_mailgun import MailGun
 
 
-db = FlaskDB()
+db = SQLAlchemy(session_options={"autocommit": True})
+migrate = Migrate()
 cache_buster = CacheBuster()
 mail = MailGun()

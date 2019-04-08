@@ -51,6 +51,6 @@ def validate_dataset(dataset):
         dataset_id=dataset['name'],
         dataset_name=dataset['title'],
         dataset_url=url,
-        publisher=pub_id,
+        publisher_id=pub_id,
         error_type=error,
     )

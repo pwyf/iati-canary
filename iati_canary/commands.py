@@ -2,23 +2,13 @@ from os.path import join
 import json
 from datetime import datetime, timedelta
 
+from flask.cli import with_appcontext
 import iatikit
 import click
-from peewee import DoesNotExist
+from sqlalchemy_mixins import ModelNotFoundError
 
-from .extensions import db
 from .utils import validate_publisher_datasets
 from . import models
-
-
-@click.command()
-def init_db():
-    '''Initialise the database.'''
-    db.database.create_tables([
-        models.Publisher,
-        models.Contact,
-        models.DatasetError,
-    ])
 
 
 @click.command()
@@ -28,6 +18,7 @@ def refresh_schemas():
 
 
 @click.command()
+@with_appcontext
 def refresh_metadata():
     '''Refresh publisher metadata.'''
     iatikit.download.metadata()
@@ -52,10 +43,10 @@ def refresh_metadata():
             'first_published_on': first_pub,
         }
         try:
-            pub = models.Publisher.get_by_id(publisher.name)
+            pub = models.Publisher.find_or_fail(publisher.name)
             [setattr(pub, k, v) for k, v in pub_arr.items()]
             pub.save()
-        except DoesNotExist:
+        except ModelNotFoundError:
             pub = models.Publisher.create(**pub_arr)
         # for dataset in publisher.datasets:
         #     contact = dataset.metadata.get('author_email', '').strip()
@@ -75,10 +66,10 @@ def refresh_metadata():
 
 @click.command()
 @click.option('--count', type=int, default=1)
+@with_appcontext
 def validate(count):
     '''Validate datasets, and add errors to database.'''
-    publishers = models.Publisher.select().order_by(
-        models.Publisher.queued_at.asc())
+    publishers = models.Publisher.sort('queued_at')
     for idx, publisher in enumerate(publishers):
         if idx >= count:
             break
@@ -90,12 +81,11 @@ def validate(count):
 
 @click.command()
 @click.option('--days-ago', type=int, default=5)
+@with_appcontext
 def cleanup(days_ago):
     '''Clean expired errors from the database.'''
-    errors = (models.DatasetError
-              .select(models.DatasetError, models.Publisher)
-              .join(models.Publisher))
+    errors = models.DatasetError.with_subquery('publisher')
     for error in errors:
         ref_datetime = error.publisher.last_checked_at - timedelta(days=5)
         if error.last_errored_at < ref_datetime:
-            error.delete_instance()
+            error.delete()

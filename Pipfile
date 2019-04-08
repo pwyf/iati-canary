@@ -9,13 +9,15 @@ verify_ssl = true
 lxml = "*"
 flask = "*"
 requests = "*"
-peewee = "*"
+flask-sqlalchemy = "*"
 environs = "*"
 gunicorn = "*"
 psycopg2-binary = "*"
 iatikit = "*"
 flask-cachebuster = "*"
 flask-mailgun3 = "*"
+flask-migrate = "*"
+sqlalchemy-mixins = "*"
 
 [requires]
 python_version = "3.6"
