@@ -6,16 +6,11 @@ from sqlalchemy_mixins import ModelNotFoundError
 
 from . import models
 from .extensions import db
+from .forms import SignupForm
 
 
 blueprint = Blueprint('iati_canary', __name__,
                       static_folder='../static')
-
-
-@blueprint.route('/signup', methods=['POST'])
-def signup():
-    flash('Sign up isn’t possible yet. Sorry!', 'danger')
-    return redirect(url_for('iati_canary.home') + '#sign-up')
 
 
 @blueprint.route('/favicon.ico')
@@ -25,8 +20,13 @@ def favicon():
                                mimetype='image/vnd.microsoft.icon')
 
 
-@blueprint.route('/')
+@blueprint.route('/', methods=['GET', 'POST'])
 def home():
+    form = SignupForm()
+    if form.validate_on_submit():
+        flash('Sign up isn’t possible yet. Sorry!', 'danger')
+        return redirect(url_for('iati_canary.home') + '#sign-up')
+
     total_publishers = models.Publisher.query.count()
     total_datasets = db.session.query(
         db.func.SUM(models.Publisher.total_datasets)
@@ -60,6 +60,7 @@ def home():
     return render_template(
         'home.html',
         numbers=numbers,
+        form=form,
     )
 
 

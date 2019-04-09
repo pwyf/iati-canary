@@ -1,0 +1,19 @@
+{% macro render_field(field, form) %}
+<div class="control-group">
+  <div class="form-group form-group-lg mb-0 pb-2">
+    {{ field.label }}
+    {% if field.errors %}
+      {{ field(class=field.render_kw.class + ' is-invalid', **kwargs)|safe }}
+    {% else %}
+      {{ field(**kwargs)|safe }}
+    {% endif %}
+    {% if field.errors %}
+      <div class="invalid-feedback">
+      {% for error in field.errors %}
+        {{ error }}
+      {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endmacro %}

@@ -327,3 +327,7 @@ a:focus, a:hover, a:active {
   background-color: white;
   color: #212529;
 }
+
+.form-control.is-invalid ~ .select2-container--bootstrap .select2-selection {
+  border-color: #dc3545;
+}

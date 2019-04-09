@@ -121,31 +121,14 @@
             {% endif %}
           {% endwith %}
 
-          <form name="sentMessage" id="contactForm" method="POST" action="{{ url_for('iati_canary.signup') }}" novalidate="novalidate">
-            <div class="control-group">
-              <div class="form-group form-group-lg mb-0 pb-2">
-                <label>Name</label>
-                <input class="form-control form-control-lg" name="name" type="text" placeholder="E.g. Jenny Publisher" required="required" data-validation-required-message="Please enter your name.">
-                <p class="help-block text-danger"></p>
-              </div>
-            </div>
-            <div class="control-group">
-              <div class="form-group form-group-lg mb-0 pb-2">
-                <label>Email Address</label>
-                <input class="form-control form-control-lg" name="email" type="email" placeholder="E.g. jenny@publisher.com" required="required" data-validation-required-message="Please enter your email address.">
-                <p class="help-block text-danger"></p>
-              </div>
-            </div>
-            <div class="control-group">
-              <div class="form-group form-group-lg mb-0 pb-2">
-                <label>Publisher</label>
-                <select class="form-control form-control-lg" name="publisher" id="select-publisher" placeholder="E.g. Publish What You Fund"></select>
-              </div>
-            </div>
-            <br>
-            <div id="success"></div>
+          <form name="sentMessage" id="contactForm" method="POST" action="{{ url_for('iati_canary.home') }}#sign-up" novalidate="novalidate">{{ form.csrf_token }}
+            {% from "_form_control.html" import render_field %}
+            {{ render_field(form.name, form, placeholder='E.g. Jenny Publisher') }}
+            {{ render_field(form.email, form, placeholder='E.g. jenny@publisher.com') }}
+            {{ render_field(form.publisher, form, placeholder='E.g. Publish What You Fund') }}
+
             <div class="form-group">
-              <button type="submit" class="btn btn-primary btn-xl" id="sendMessageButton">Sign up</button>
+              {{ form.submit(class="btn btn-primary btn-xl") }}
             </div>
           </form>
         </div>

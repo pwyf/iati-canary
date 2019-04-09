@@ -18,6 +18,7 @@ flask-cachebuster = "*"
 flask-mailgun3 = "*"
 flask-migrate = "*"
 sqlalchemy-mixins = "*"
+flask-wtf = "*"
 
 [requires]
 python_version = "3.6"
