@@ -31,7 +31,7 @@ def home():
     total_datasets = db.session.query(
         db.func.SUM(models.Publisher.total_datasets)
     ).first()[0]
-    models.DatasetError.where(error_type__ne='schema', last_status='fail')
+    total_datasets = total_datasets if total_datasets else 0
     total_pub_errors = (models.DatasetError
                         .where(error_type__ne='schema',
                                last_status='fail')
@@ -50,13 +50,17 @@ def home():
                                    .distinct(models.DatasetError.id)
                                    .count()
                                    )
+    numbers = {
+        'total_publishers': total_publishers,
+        'total_datasets': total_datasets,
+        'total_pub_errors': total_pub_errors,
+        'total_dataset_errors': total_dataset_errors,
+        'total_dataset_schema_errors': total_dataset_schema_errors,
+    }
     return render_template(
         'home.html',
-        total_publishers=total_publishers,
-        total_pub_errors=total_pub_errors,
-        total_datasets=total_datasets,
-        total_dataset_errors=total_dataset_errors,
-        total_dataset_schema_errors=total_dataset_schema_errors)
+        numbers=numbers,
+    )
 
 
 @blueprint.route('/publishers')
