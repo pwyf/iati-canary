@@ -27,14 +27,10 @@ def refresh_metadata():
         json.dump({'updated_at': now}, f)
 
     for publisher in iatikit.data().publishers:
-        first_pub = datetime.strptime(
-            min([d.metadata.get('metadata_created')
-                 for d in publisher.datasets]), '%Y-%m-%dT%H:%M:%S.%f').date()
         pub_arr = {
             'id': publisher.name,
             'name': publisher.metadata.get('title'),
             'total_datasets': len(publisher.datasets),
-            'first_published_on': first_pub,
         }
         try:
             pub = models.Publisher.find_or_fail(publisher.name)
