@@ -65,18 +65,20 @@ def refresh_metadata():
 
 
 @click.command()
-@click.option('--count', type=int, default=1)
+@click.option('--count', type=int, default=None)
 @with_appcontext
 def validate(count):
     '''Validate datasets, and add errors to database.'''
-    publishers = models.Publisher.sort('queued_at')
-    for idx, publisher in enumerate(publishers):
-        if idx >= count:
+    idx = 0
+    while True:
+        if count and idx >= count:
             break
+        publisher = models.Publisher.sort('queued_at').first()
         publisher.last_checked_at = datetime.now()
         validate_publisher_datasets(publisher.id)
         publisher.queued_at = datetime.now()
         publisher.save()
+        idx += 1
 
 
 @click.command()
