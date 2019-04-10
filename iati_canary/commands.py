@@ -86,6 +86,7 @@ def cleanup(days_ago):
     '''Clean expired errors from the database.'''
     errors = models.DatasetError.with_subquery('publisher')
     for error in errors:
-        ref_datetime = error.publisher.last_checked_at - timedelta(days=5)
+        ref_datetime = error.publisher.last_checked_at - \
+                       timedelta(days=days_ago)
         if error.last_errored_at < ref_datetime:
             error.delete()
