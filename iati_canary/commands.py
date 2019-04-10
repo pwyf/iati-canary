@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 
 from flask.cli import with_appcontext
 import iatikit
+import requests
 import click
 from sqlalchemy_mixins import ModelNotFoundError
 
@@ -21,23 +22,27 @@ def refresh_schemas():
 @with_appcontext
 def refresh_metadata():
     '''Refresh publisher metadata.'''
-    iatikit.download.metadata()
-    now = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
-    with open(join('__iatikitcache__', 'registry', 'metadata.json'), 'w') as f:
-        json.dump({'updated_at': now}, f)
-
-    for publisher in iatikit.data().publishers:
-        pub_arr = {
-            'id': publisher.name,
-            'name': publisher.metadata.get('title'),
-            'total_datasets': len(publisher.datasets),
-        }
-        try:
-            pub = models.Publisher.find_or_fail(publisher.name)
-            [setattr(pub, k, v) for k, v in pub_arr.items()]
-            pub.save()
-        except ModelNotFoundError:
-            pub = models.Publisher.create(**pub_arr)
+    url_tmpl = 'https://iatiregistry.org/api/3/action/package_search' + \
+               '?start={start}&rows=1000'
+    org_url_tmpl = 'https://iatiregistry.org/api/3/action/group_show' + \
+                   '?id={org_slug}'
+    page = 1
+    page_size = 1000
+    while True:
+        print(f'Page {page}')
+        start = page_size * (page - 1)
+        j = requests.get(url_tmpl.format(start=start)).json()
+        if len(j['result']['results']) == 0:
+            break
+        for res in j['result']['results']:
+            org = res['organization']
+            if not org:
+                continue
+            org_id = org['name']
+            org_name = org['title']
+            if models.Publisher.find(org_id) is None:
+                models.Publisher.create(id=org_id, name=org_name)
+        page += 1
 
 
 @click.command()

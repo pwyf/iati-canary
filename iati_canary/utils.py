@@ -1,3 +1,4 @@
+from datetime import datetime
 from io import BytesIO
 
 import requests
@@ -12,13 +13,21 @@ def validate_publisher_datasets(publisher_id):
     rows = 50
     tmpl = 'https://iatiregistry.org/api/3/action/package_search?' + \
            'q=organization:{publisher_id}&start={start}&rows={rows}'
+    first_pub = None
     while True:
         j = requests.get(tmpl.format(
             publisher_id=publisher_id, start=start, rows=rows)).json()
         res = j['result']['results']
         if len(res) == 0:
+            pub = models.Publisher.find(publisher_id)
+            pub.total_datasets = j['result']['count']
+            pub.first_published_on = first_pub
+            pub.save()
             break
         for dataset in res:
+            published = dataset['metadata_created'][:10]
+            if first_pub is None or published < first_pub:
+                first_pub = published
             validate_dataset(dataset)
         start += rows
 
