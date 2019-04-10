@@ -27,12 +27,6 @@ def refresh_metadata():
         json.dump({'updated_at': now}, f)
 
     for publisher in iatikit.data().publishers:
-        # contacts = {}
-        # contact = publisher.metadata.get('publisher_contact_email', '').strip()
-        # if contact in ['please@update.email', 'Email not found', '']:
-        #     contact = None
-        # if contact:
-        #     contacts[contact] = None
         first_pub = datetime.strptime(
             min([d.metadata.get('metadata_created')
                  for d in publisher.datasets]), '%Y-%m-%dT%H:%M:%S.%f').date()
@@ -48,20 +42,6 @@ def refresh_metadata():
             pub.save()
         except ModelNotFoundError:
             pub = models.Publisher.create(**pub_arr)
-        # for dataset in publisher.datasets:
-        #     contact = dataset.metadata.get('author_email', '').strip()
-        #     if contact not in contacts:
-        #         contacts[contact] = dataset.name
-        # for contact, dataset_id in contacts.items():
-        #     con_arr = {
-        #         'email': contact,
-        #         'publisher': pub,
-        #         'dataset_id': dataset_id,
-        #     }
-        #     try:
-        #         models.Contact.create(**con_arr)
-        #     except:
-        #         db.database.rollback()
 
 
 @click.command()
