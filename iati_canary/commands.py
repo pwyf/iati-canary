@@ -24,8 +24,6 @@ def refresh_metadata():
     '''Refresh publisher metadata.'''
     url_tmpl = 'https://iatiregistry.org/api/3/action/package_search' + \
                '?start={start}&rows=1000'
-    org_url_tmpl = 'https://iatiregistry.org/api/3/action/group_show' + \
-                   '?id={org_slug}'
     page = 1
     page_size = 1000
     while True:
