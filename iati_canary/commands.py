@@ -48,6 +48,11 @@ def validate(count):
     '''Validate datasets, and add errors to database.'''
     idx = 0
     while True:
+        if count is None and idx % 100 == 0:
+            # do a refresh every 100 orgs
+            refresh_metadata()
+            refresh_schemas()
+            cleanup()
         if count and idx >= count:
             break
         publisher = models.Publisher.sort('queued_at').first()
