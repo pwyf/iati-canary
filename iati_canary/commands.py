@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from flask.cli import with_appcontext
 import click
@@ -36,7 +36,7 @@ def validate(count):
         publisher = models.Publisher.sort('queued_at').first()
         publisher.last_checked_at = datetime.now()
         utils.validate_publisher_datasets(publisher.id)
-        publisher.queued_at = datetime.now()
+        publisher.queued_at = datetime.now() + timedelta(days=1)
         publisher.save()
         idx += 1
 
