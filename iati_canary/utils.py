@@ -41,11 +41,13 @@ def validate_dataset(dataset):
     error = False
     try:
         print(f'Downloading: "{url}"')
-        resp = requests.get(url, verify=False,
+        resp = requests.get(url, verify=False, timeout=30,
                             headers={'User-Agent': 'IATI Canary'})
         if str(resp.status_code)[0] != '2':
             error = 'download'
     except requests.exceptions.ConnectionError:
+        error = 'download'
+    except requests.exceptions.Timeout:
         error = 'download'
 
     if not error:
