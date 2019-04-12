@@ -28,14 +28,18 @@ def validate_publisher_datasets(publisher_id):
             published = dataset['metadata_created'][:10]
             if first_pub is None or published < first_pub:
                 first_pub = published
-            validate_dataset(dataset)
+            validate_dataset(dataset, ignore_after=pub.last_checked_at)
         start += rows
 
 
-def validate_dataset(dataset):
+def validate_dataset(dataset, ignore_after=None):
     print(f'Validating: {dataset["name"]}')
 
     pub_id = dataset.get('organization', {}).get('name')
+
+    d = models.DatasetError.where(dataset_id=dataset['name'])
+    if ignore_after and d.last_errored_at > ignore_after:
+        return
 
     url = dataset['resources'][0]['url']
     error = False
