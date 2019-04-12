@@ -4,7 +4,11 @@ from flask_migrate import Migrate
 from flask_mailgun import MailGun
 
 
-db = SQLAlchemy(session_options={"autocommit": True})
+db = SQLAlchemy(session_options={
+        "autocommit": True,
+        "autoflush": False,
+        "expire_on_commit": False,
+    })
 migrate = Migrate()
 cache_buster = CacheBuster()
 mail = MailGun()
