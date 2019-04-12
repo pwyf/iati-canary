@@ -14,12 +14,12 @@ def validate_publisher_datasets(publisher_id):
     tmpl = 'https://iatiregistry.org/api/3/action/package_search?' + \
            'q=organization:{publisher_id}&start={start}&rows={rows}'
     first_pub = None
+    pub = models.Publisher.find(publisher_id)
     while True:
         j = requests.get(tmpl.format(
             publisher_id=publisher_id, start=start, rows=rows)).json()
         res = j['result']['results']
         if len(res) == 0:
-            pub = models.Publisher.find(publisher_id)
             pub.total_datasets = j['result']['count']
             pub.first_published_on = first_pub
             pub.save()
@@ -37,8 +37,8 @@ def validate_dataset(dataset, ignore_after=None):
 
     pub_id = dataset.get('organization', {}).get('name')
 
-    d = models.DatasetError.where(dataset_id=dataset['name'])
-    if ignore_after and d.last_errored_at > ignore_after:
+    d = models.DatasetError.where(dataset_id=dataset['name']).first()
+    if d and ignore_after and d.last_errored_at > ignore_after:
         return
 
     url = dataset['resources'][0]['url']
