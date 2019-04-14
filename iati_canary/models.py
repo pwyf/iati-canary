@@ -52,7 +52,7 @@ class DatasetError(BaseModel, CreatedUpdatedMixin):
                              nullable=False)
     publisher = db.relationship('Publisher',
                                 backref=db.backref('errors', lazy=True))
-    error_type = db.Column(db.String(20))
+    error_type = db.Column(db.String(20))  # download, xml, schema
     last_status = db.Column(db.String(20), default='fail', nullable=False)
     error_count = db.Column(db.Integer, default=1, nullable=False)
     check_count = db.Column(db.Integer, default=1, nullable=False)
