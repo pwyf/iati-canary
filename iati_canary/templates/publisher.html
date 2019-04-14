@@ -25,7 +25,11 @@
                 <a href="{{ error.dataset_url }}" target="_blank"><i class="fas fa-cloud-download-alt"></i></a>
             </td>
             <td>
-                <a href="https://iatiregistry.org/dataset/{{ error.dataset_id }}">{{ error.dataset_name }}</a>
+                <a href="https://iatiregistry.org/dataset/{{ error.dataset_id }}">{%- if error.dataset_name -%}
+                    {{ error.dataset_name }}
+                {%- else -%}
+                    {{ error.dataset_id }}
+                {%- endif -%}</a>
             </td>
             <td>
                 {% if error.last_status == 'success' %}
