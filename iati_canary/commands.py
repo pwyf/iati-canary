@@ -17,3 +17,10 @@ def refresh_metadata():
 def cleanup(days_ago):
     '''Clean expired errors from the database.'''
     utils.cleanup(days_ago)
+
+
+@click.command()
+@with_appcontext
+def fetch_errors():
+    '''Fetch errors from github gist.'''
+    utils.fetch_errors()

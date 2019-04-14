@@ -21,8 +21,6 @@ class Publisher(BaseModel, CreatedUpdatedMixin):
     name = db.Column(db.Text, nullable=False)
     total_datasets = db.Column(db.Integer, default=0, nullable=False)
     first_published_on = db.Column(db.Date)
-    last_checked_at = db.Column(db.DateTime)
-    queued_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 class Contact(BaseModel, CreatedUpdatedMixin):
@@ -42,40 +40,40 @@ class Contact(BaseModel, CreatedUpdatedMixin):
 
 
 class DatasetError(BaseModel, CreatedUpdatedMixin):
-    __tablename__ = 'dataseterror'
+    __abstract__ = True
     id = db.Column(db.Integer, primary_key=True)
     dataset_id = db.Column(db.String(255), unique=True, nullable=False)
-    dataset_name = db.Column(db.Text, nullable=False)
+    dataset_name = db.Column(db.Text)
     dataset_url = db.Column(db.String(255), nullable=False)
-    publisher_id = db.Column(db.String(255),
-                             db.ForeignKey('publisher.id', ondelete='CASCADE'),
-                             nullable=False)
-    publisher = db.relationship('Publisher',
-                                backref=db.backref('errors', lazy=True))
-    error_type = db.Column(db.String(20))  # download, xml, schema
-    last_status = db.Column(db.String(20), default='fail', nullable=False)
+    currently_erroring = db.Column(db.Boolean, default=True, nullable=False)
     error_count = db.Column(db.Integer, default=1, nullable=False)
     check_count = db.Column(db.Integer, default=1, nullable=False)
     last_errored_at = db.Column(db.DateTime, nullable=False,
                                 default=datetime.utcnow)
 
-    @classmethod
-    def upsert(cls, success, **kwargs):
-        dataset_error = cls.where(dataset_id=kwargs.get('dataset_id')).first()
-        if not dataset_error:
-            if success:
-                return
-            return cls.create(**kwargs)
-        dataset_error.check_count += 1
-        if success:
-            dataset_error.last_status = 'success'
-            return dataset_error.save()
-        dataset_error.last_status = 'fail'
-        if dataset_error.error_type != kwargs.get('error_type') and \
-                kwargs.get('error_type') == 'schema':
-            # delete old error and replace
-            dataset_error.delete()
-            return cls.create(**kwargs)
-        dataset_error.last_errored_at = datetime.now()
-        dataset_error.error_count += 1
-        return dataset_error.save()
+
+class DownloadError(DatasetError):
+    publisher_id = db.Column(db.String(255),
+                             db.ForeignKey('publisher.id', ondelete='CASCADE'),
+                             nullable=False)
+    publisher = db.relationship('Publisher',
+                                backref=db.backref('download_errors',
+                                                   lazy=True))
+
+
+class XMLError(DatasetError):
+    publisher_id = db.Column(db.String(255),
+                             db.ForeignKey('publisher.id', ondelete='CASCADE'),
+                             nullable=False)
+    publisher = db.relationship('Publisher',
+                                backref=db.backref('xml_errors',
+                                                   lazy=True))
+
+
+class ValidationError(DatasetError):
+    publisher_id = db.Column(db.String(255),
+                             db.ForeignKey('publisher.id', ondelete='CASCADE'),
+                             nullable=False)
+    publisher = db.relationship('Publisher',
+                                backref=db.backref('validation_errors',
+                                                   lazy=True))

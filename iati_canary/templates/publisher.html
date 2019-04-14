@@ -7,11 +7,7 @@
 <div class="row">
   <div class="col-lg-12">
 
-{% if publisher.last_checked_at %}
-    <p>{{ errors | count }} of {{ publisher.total_datasets }} datasets have issues.</p>
-{% else %}
-    <p>{{ publisher.total_datasets }} datasets have not yet been checked.</p>
-{% endif %}
+<p>{{ errors | count }} of {{ publisher.total_datasets }} datasets have issues.</p>
 
 {% if errors %}
 <table class="table">
@@ -48,9 +44,6 @@
 </table>
 {% endif %}
 
-{% if publisher.last_checked_at %}
-    <p>Last checked: {{ publisher.last_checked_at }}</p>
-{% endif %}
     </div>
 </div>
 {% endblock %}

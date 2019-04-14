@@ -32,22 +32,28 @@ def home():
         db.func.SUM(models.Publisher.total_datasets)
     ).first()[0]
     total_datasets = total_datasets if total_datasets else 0
-    total_pub_errors = (models.DatasetError
-                        .where(error_type__ne='schema',
-                               last_status='fail')
-                        .distinct(models.DatasetError.publisher_id)
+    pub_errors = (models.DownloadError
+                  .where(currently_erroring=True)
+                  .distinct(models.DownloadError.publisher_id)
+                  .all()
+                  ) + \
+                 (models.XMLError
+                  .where(currently_erroring=True)
+                  .distinct(models.XMLError.publisher_id)
+                  .all()
+                  )
+    total_pub_errors = len(set([err.publisher_id for err in pub_errors]))
+    total_download_errors = (models.DownloadError
+                             .where(currently_erroring=True)
+                             .count()
+                             )
+    total_xml_errors = (models.XMLError
+                        .where(currently_erroring=True)
                         .count()
                         )
-    total_dataset_errors = (models.DatasetError
-                            .where(error_type__ne='schema',
-                                   last_status='fail')
-                            .distinct(models.DatasetError.id)
-                            .count()
-                            )
-    total_dataset_schema_errors = (models.DatasetError
-                                   .where(error_type='schema',
-                                          last_status='fail')
-                                   .distinct(models.DatasetError.id)
+    total_dataset_errors = total_download_errors + total_xml_errors
+    total_dataset_schema_errors = (models.ValidationError
+                                   .where(currently_erroring=True)
                                    .count()
                                    )
     numbers = {
@@ -66,8 +72,7 @@ def home():
 
 @blueprint.route('/publishers')
 def publishers():
-    publishers = models.Publisher.select().order_by(
-        models.Publisher.last_checked_at.desc(nulls='LAST'))
+    publishers = models.Publisher.all()
     return render_template('publishers.html', publishers=publishers)
 
 
@@ -83,16 +88,16 @@ def publishers_json():
         publishers = (
             db.session.query(
                 models.Publisher,
-                db.func.COUNT(models.DatasetError.id)
-                .filter(
-                    (models.DatasetError.error_type != 'schema') &
-                    (models.DatasetError.last_status != 'success')))
+                db.func.COUNT(models.DownloadError.id)
+                .op("+")(db.func.COUNT(models.XMLError.id))
+                .label('total'))
             .select_from(models.Publisher)
-            .outerjoin(models.DatasetError)
+            .outerjoin(models.DownloadError)
+            .outerjoin(models.XMLError)
             .filter((models.Publisher.name.ilike(f'%{search}%')) |
                     (models.Publisher.id.ilike(f'%{search}%')))
             .group_by(models.Publisher.id)
-            .order_by(db.desc(db.text('anon_1')), models.Publisher.name)
+            .order_by(db.desc(db.text('total')), models.Publisher.name)
             .paginate(page, page_size)
         )
         results = [{
@@ -126,6 +131,8 @@ def publisher(publisher_id):
         publisher = models.Publisher.find_or_fail(publisher_id)
     except ModelNotFoundError:
         return abort(404)
+    errors = publisher.download_errors + publisher.xml_errors + \
+        publisher.validation_errors
     return render_template('publisher.html',
                            publisher=publisher,
-                           errors=publisher.errors)
+                           errors=errors)
