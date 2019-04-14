@@ -32,11 +32,11 @@
                 {%- endif -%}</a>
             </td>
             <td>
-                {% if error.last_status == 'success' %}
+                {% if not error.currently_erroring %}
                     Recently fixed
-                {% elif error.error_type == 'download' %}
+                {% elif error.__tablename__ == 'download_error' %}
                     Couldn’t download
-                {% elif error.error_type == 'xml' %}
+                {% elif error.__tablename__ == 'xml_error' %}
                     Not valid XML
                 {% else %}
                     Not valid against IATI schema <a href="http://validator.iatistandard.org/index.php?url={{ error.dataset_url }}" target="_blank">(validate)</a>
