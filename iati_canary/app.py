@@ -29,7 +29,5 @@ def register_filters(app):
 
 
 def register_commands(app):
-    app.cli.add_command(commands.refresh_schemas)
     app.cli.add_command(commands.refresh_metadata)
-    app.cli.add_command(commands.validate)
     app.cli.add_command(commands.cleanup)
