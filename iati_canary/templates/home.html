@@ -125,7 +125,7 @@
             {% from "_form_control.html" import render_field %}
             {{ render_field(form.name, form, placeholder='E.g. Jenny Publisher') }}
             {{ render_field(form.email, form, placeholder='E.g. jenny@publisher.com') }}
-            {{ render_field(form.publisher, form, placeholder='E.g. Publish What You Fund') }}
+            {{ render_field(form.publisher_id, form, placeholder='E.g. Publish What You Fund') }}
 
             <div class="form-group">
               {{ form.submit(class="btn btn-primary btn-xl") }}

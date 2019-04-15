@@ -22,6 +22,6 @@ class SignupForm(FlaskForm):
     email = StringField('Email Address', render_kw=render_kw, validators=[
         DataRequired('Please enter your email address.'),
         Email('Please enter a valid email address.')])
-    publisher = DynamicSelectField('Publisher', render_kw=render_kw,
-                                   choices=[], id='select-publisher')
+    publisher_id = DynamicSelectField('Publisher', render_kw=render_kw,
+                                      choices=[], id='select-publisher')
     submit = SubmitField('Sign up')
