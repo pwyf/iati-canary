@@ -9,7 +9,7 @@ from .extensions import db
 from .forms import SignupForm
 
 
-blueprint = Blueprint('iati_canary', __name__,
+blueprint = Blueprint('canary', __name__,
                       static_folder='../static')
 
 
@@ -25,7 +25,7 @@ def home():
     form = SignupForm()
     if form.validate_on_submit():
         flash('Sign up isn’t possible yet. Sorry!', 'danger')
-        return redirect(url_for('iati_canary.home') + '#sign-up')
+        return redirect(url_for('canary.home') + '#sign-up')
 
     numbers = utils.get_stats()
     return render_template(

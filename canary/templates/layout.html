@@ -12,8 +12,8 @@
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:image" content="{{ url_for('static', filename='img/canary.png') }}" />
   <meta property="og:image" content="{{ url_for('static', filename='img/canary.png') }}" />
-  <meta property="og:url" content="{{ url_for('iati_canary.home', _external=True) }}">
-  <meta name="twitter:url" content="{{ url_for('iati_canary.home', _external=True) }}" />
+  <meta property="og:url" content="{{ url_for('canary.home', _external=True) }}">
+  <meta name="twitter:url" content="{{ url_for('canary.home', _external=True) }}" />
   <meta property="og:title" content="IATI Canary" />
   <meta name="twitter:title" content="IATI Canary" />
   <meta property="og:description" content="An early warning system for IATI publishers." />
@@ -55,13 +55,13 @@
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item mx-0 mx-lg-1">
-            <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="{% if request.path != url_for('iati_canary.home') %}{{ url_for('iati_canary.home') }}{% endif %}#about">About</a>
+            <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="{% if request.path != url_for('canary.home') %}{{ url_for('canary.home') }}{% endif %}#about">About</a>
           </li>
           <li class="nav-item mx-0 mx-lg-1">
-            <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="{% if request.path != url_for('iati_canary.home') %}{{ url_for('iati_canary.home') }}{% endif %}#status">Status</a>
+            <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="{% if request.path != url_for('canary.home') %}{{ url_for('canary.home') }}{% endif %}#status">Status</a>
           </li>
           <li class="nav-item mx-0 mx-lg-1">
-            <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="{% if request.path != url_for('iati_canary.home') %}{{ url_for('iati_canary.home') }}{% endif %}#sign-up">Sign up</a>
+            <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="{% if request.path != url_for('canary.home') %}{{ url_for('canary.home') }}{% endif %}#sign-up">Sign up</a>
           </li>
         </ul>
       </div>

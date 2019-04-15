@@ -5,7 +5,7 @@ from .extensions import db, migrate, cache_buster, mail
 from .models import BaseModel
 
 
-def create_app(config_object='iati_canary.settings'):
+def create_app(config_object='canary.settings'):
     app = Flask(__name__.split('.')[0])
     app.config.from_object(config_object)
     app.register_blueprint(views.blueprint)

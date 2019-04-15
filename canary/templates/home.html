@@ -67,7 +67,7 @@
             {% endif %}
           {% endwith %}
 
-          <form name="sentMessage" id="contactForm" method="POST" action="{{ url_for('iati_canary.home') }}#sign-up" novalidate="novalidate">{{ form.csrf_token }}
+          <form name="sentMessage" id="contactForm" method="POST" action="{{ url_for('canary.home') }}#sign-up" novalidate="novalidate">{{ form.csrf_token }}
             {% from "_form_control.html" import render_field %}
             {{ render_field(form.name, form, placeholder='E.g. Jenny Publisher') }}
             {{ render_field(form.email, form, placeholder='E.g. jenny@publisher.com') }}
