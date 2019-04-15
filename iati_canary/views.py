@@ -4,7 +4,7 @@ from flask import abort, Blueprint, render_template, send_from_directory, \
                   jsonify, request, redirect, url_for, flash
 from sqlalchemy_mixins import ModelNotFoundError
 
-from . import models
+from . import models, utils
 from .extensions import db
 from .forms import SignupForm
 
@@ -27,42 +27,7 @@ def home():
         flash('Sign up isn’t possible yet. Sorry!', 'danger')
         return redirect(url_for('iati_canary.home') + '#sign-up')
 
-    total_publishers = models.Publisher.query.count()
-    total_datasets = db.session.query(
-        db.func.SUM(models.Publisher.total_datasets)
-    ).first()[0]
-    total_datasets = total_datasets if total_datasets else 0
-    pub_errors = (models.DownloadError
-                  .where(currently_erroring=True)
-                  .distinct(models.DownloadError.publisher_id)
-                  .all()
-                  ) + \
-                 (models.XMLError
-                  .where(currently_erroring=True)
-                  .distinct(models.XMLError.publisher_id)
-                  .all()
-                  )
-    total_pub_errors = len(set([err.publisher_id for err in pub_errors]))
-    total_download_errors = (models.DownloadError
-                             .where(currently_erroring=True)
-                             .count()
-                             )
-    total_xml_errors = (models.XMLError
-                        .where(currently_erroring=True)
-                        .count()
-                        )
-    total_dataset_errors = total_download_errors + total_xml_errors
-    total_dataset_schema_errors = (models.ValidationError
-                                   .where(currently_erroring=True)
-                                   .count()
-                                   )
-    numbers = {
-        'total_publishers': total_publishers,
-        'total_datasets': total_datasets,
-        'total_pub_errors': total_pub_errors,
-        'total_dataset_errors': total_dataset_errors,
-        'total_dataset_schema_errors': total_dataset_schema_errors,
-    }
+    numbers = utils.get_stats()
     return render_template(
         'home.html',
         numbers=numbers,

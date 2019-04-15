@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import requests
 
 from . import models
+from .extensions import db
 
 
 def cleanup(days_ago):
@@ -107,3 +108,42 @@ def fetch_errors():
             fixed_dataset.currently_erroring = False
             fixed_dataset.save()
     refresh_metadata()
+
+
+def get_stats():
+    total_publishers = models.Publisher.query.count()
+    total_datasets = db.session.query(
+        db.func.SUM(models.Publisher.total_datasets)
+    ).first()[0]
+    total_datasets = total_datasets if total_datasets else 0
+    pub_errors = (models.DownloadError
+                  .where(currently_erroring=True)
+                  .distinct(models.DownloadError.publisher_id)
+                  .all()
+                  ) + \
+                 (models.XMLError
+                  .where(currently_erroring=True)
+                  .distinct(models.XMLError.publisher_id)
+                  .all()
+                  )
+    total_pub_errors = len(set([err.publisher_id for err in pub_errors]))
+    total_download_errors = (models.DownloadError
+                             .where(currently_erroring=True)
+                             .count()
+                             )
+    total_xml_errors = (models.XMLError
+                        .where(currently_erroring=True)
+                        .count()
+                        )
+    total_dataset_errors = total_download_errors + total_xml_errors
+    total_dataset_schema_errors = (models.ValidationError
+                                   .where(currently_erroring=True)
+                                   .count()
+                                   )
+    return {
+        'total_publishers': total_publishers,
+        'total_datasets': total_datasets,
+        'total_pub_errors': total_pub_errors,
+        'total_dataset_errors': total_dataset_errors,
+        'total_dataset_schema_errors': total_dataset_schema_errors,
+    }
