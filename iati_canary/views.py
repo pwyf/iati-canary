@@ -35,12 +35,6 @@ def home():
     )
 
 
-@blueprint.route('/publishers')
-def publishers():
-    publishers = models.Publisher.all()
-    return render_template('publishers.html', publishers=publishers)
-
-
 @blueprint.route('/publishers.json')
 def publishers_json():
     page_size = 20
