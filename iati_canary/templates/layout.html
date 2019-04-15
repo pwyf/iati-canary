@@ -5,8 +5,20 @@
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
+  <meta name="description" content="An early warning system for IATI publishers.">
+  <meta name="author" content="@andylolz">
+
+  <meta property="og:site_name" content="IATI Canary" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="{{ url_for('static', filename='img/canary.png') }}" />
+  <meta property="og:image" content="{{ url_for('static', filename='img/canary.png') }}" />
+  <meta property="og:url" content="{{ url_for('iati_canary.home', _external=True) }}">
+  <meta name="twitter:url" content="{{ url_for('iati_canary.home', _external=True) }}" />
+  <meta property="og:title" content="IATI Canary" />
+  <meta name="twitter:title" content="IATI Canary" />
+  <meta property="og:description" content="An early warning system for IATI publishers." />
+  <meta name="twitter:description" content="An early warning system for IATI publishers." />
+
 
   <title>IATI Canary</title>
 
