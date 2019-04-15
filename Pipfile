@@ -19,6 +19,7 @@ flask-mailgun3 = "*"
 flask-migrate = "*"
 sqlalchemy-mixins = "*"
 flask-wtf = "*"
+itsdangerous = "*"
 
 [requires]
 python_version = "3.6"
