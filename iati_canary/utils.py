@@ -15,15 +15,10 @@ def cleanup(days_ago):
             error.delete()
 
 
-def refresh_metadata():
-    started_at = datetime.utcnow()
-    error_types = [
-        models.DownloadError,
-        models.XMLError,
-        models.ValidationError,
-    ]
-    url_tmpl = 'https://iatiregistry.org/api/3/action/package_search' + \
-               '?start={start}&rows={page_size}'
+def refresh_publishers():
+    print('Refreshing list of publishers ...')
+    url_tmpl = 'https://iatiregistry.org/api/3/action/package_search?' + \
+               'start={start}&rows={page_size}'
     page = 1
     page_size = 1000
     while True:
@@ -39,33 +34,58 @@ def refresh_metadata():
                 continue
             org_id = org['name']
             org_name = org['title']
-            first_pub = datetime.strptime(
-                res['metadata_created'][:10], '%Y-%m-%d').date()
             pub = models.Publisher.find(org_id)
             if pub is None:
                 models.Publisher.create(
                     id=org_id,
                     name=org_name,
-                    total_datasets=1,
-                    first_published_on=first_pub,
                 )
-            else:
-                if pub.created_at > started_at:
-                    pub.total_datasets += 1
-                    if first_pub < pub.first_published_on:
-                        pub.first_published_on = first_pub
-                    pub.save()
-
-            for error_type in error_types:
-                error = error_type.where(dataset_id=res['name']).first()
-                if error:
-                    error.dataset_name = res['title']
-                    error.save()
         page += 1
 
 
+def refresh_metadata():
+    print('Refreshing publisher and dataset metadata ...')
+    error_types = [
+        models.DownloadError,
+        models.XMLError,
+        models.ValidationError,
+    ]
+    url_tmpl = 'https://iatiregistry.org/api/3/action/package_search?' + \
+               'q=organization:{publisher_id}&start={start}&rows={page_size}'
+    page_size = 1000
+    for publisher in models.Publisher.query:
+        print(f'Refreshing publisher: {publisher.id}')
+        page = 1
+        first_pub = None
+        while True:
+            start = page_size * (page - 1)
+            j = requests.get(url_tmpl.format(
+                publisher_id=publisher.id,
+                start=start,
+                page_size=page_size)).json()
+            for res in j['result']['results']:
+                dataset_first_pub = datetime.strptime(
+                    res['metadata_created'][:10],
+                    '%Y-%m-%d').date()
+                if not first_pub or dataset_first_pub < first_pub:
+                    first_pub = dataset_first_pub
+                for error_type in error_types:
+                    error = error_type.where(dataset_id=res['name']).first()
+                    if error:
+                        error.dataset_name = res['title']
+                        error.save()
+            if len(j['result']['results']) < page_size:
+                publisher.total_datasets = j['result']['count']
+                if first_pub:
+                    publisher.first_published_on = first_pub
+                publisher.save()
+                break
+            page += 1
+
+
 def fetch_errors():
-    refresh_metadata()
+    refresh_publishers()
+    print('Fetching errors from github ...')
     meta = 'https://www.dropbox.com/s/6a3wggckhbb9nla/metadata.json?dl=1'
     last_errored_at = requests.get(meta).json()['started_at']
     started_at = datetime.utcnow()
@@ -77,6 +97,7 @@ def fetch_errors():
         'validation-errors': models.ValidationError,
     }
     for slug, model in errors.items():
+        print(f'Fetching {slug} ...')
         r = requests.get(gist_base + slug)
         for line in r.iter_lines():
             line = line.decode()
