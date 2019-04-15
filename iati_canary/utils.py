@@ -7,11 +7,16 @@ from .extensions import db
 
 
 def cleanup(days_ago):
-    errors = models.DatasetError.with_subquery('publisher')
-    for error in errors:
-        ref_datetime = error.publisher.last_checked_at - \
-                       timedelta(days=days_ago)
-        if error.last_errored_at < ref_datetime:
+    error_types = [
+        models.DownloadError,
+        models.XMLError,
+        models.ValidationError,
+    ]
+    error_expires_at = datetime.utcnow() - timedelta(days=days_ago)
+    for model in error_types:
+        old_errors = model.where(currently_erroring=False,
+                                 last_errored_at__lt=error_expires_at)
+        for error in old_errors:
             error.delete()
 
 
