@@ -9,8 +9,8 @@ from . import models
 class DynamicSelectField(SelectField):
     def pre_validate(self, form):
         try:
-            pub = models.Publisher.find_or_fail(form.publisher.data)
-            form.publisher.choices = [(pub.id, pub.name)]
+            pub = models.Publisher.find_or_fail(self.data)
+            self.choices = [(pub.id, pub.name)]
         except ModelNotFoundError:
             raise ValueError(self.gettext('Please choose a publisher.'))
 
