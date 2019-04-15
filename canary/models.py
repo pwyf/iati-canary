@@ -31,10 +31,10 @@ class Contact(BaseModel, CreatedUpdatedMixin):
     email = db.Column(db.Text, nullable=False)
     publisher_id = db.Column(db.String(255),
                              db.ForeignKey('publisher.id', ondelete='CASCADE'),
-                             nullable=False)
+                             nullable=True)
     publisher = db.relationship('Publisher',
                                 backref=db.backref('contacts', lazy=True))
-    active = db.Column(db.Boolean, default=True, nullable=False)
+    active = db.Column(db.Boolean, default=False, nullable=False)
     confirmed_at = db.Column(db.DateTime)
     last_messaged_at = db.Column(db.DateTime)
 
