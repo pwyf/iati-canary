@@ -69,6 +69,7 @@ class Contact(BaseModel, CreatedUpdatedMixin):
             contact = cls.find(data[0])
 
         expired = expired and (contact is not None)
+        invalid = invalid or (contact is None)
 
         return expired, invalid, contact
 
