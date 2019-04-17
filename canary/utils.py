@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
 
 import requests
+from flask import render_template
 
 from . import models
-from .extensions import db
+from .extensions import db, mail
 
 
 def cleanup(days_ago):
@@ -173,3 +174,19 @@ def get_stats():
         'total_dataset_errors': total_dataset_errors,
         'total_dataset_schema_errors': total_dataset_schema_errors,
     }
+
+
+def flush_emails():
+    for contact in models.Contact.where(last_messaged_at=None):
+        token = contact.generate_token()
+        text = render_template('emails/confirm_email.txt', token=token)
+        html = render_template('emails/confirm_email.html', token=token)
+        mail.send_message(
+            subject='Please confirm your email address',
+            sender='IATI-Canary <no-reply@iati-canary.org>',
+            recipients=[f'{contact.name} <{contact.email}>'],
+            body=text,
+            html=html,
+        )
+        contact.last_messaged_at = datetime.utcnow()
+        contact.save()

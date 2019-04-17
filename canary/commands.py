@@ -17,3 +17,10 @@ def cleanup(days_ago):
 def fetch_errors():
     '''Fetch errors from github gist.'''
     utils.fetch_errors()
+
+
+@click.command()
+@with_appcontext
+def flush_emails():
+    '''Send some pending emails.'''
+    utils.flush_emails()

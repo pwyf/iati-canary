@@ -1,3 +1,4 @@
+from datetime import datetime
 from os.path import join
 
 from flask import abort, Blueprint, render_template, send_from_directory, \
@@ -24,7 +25,13 @@ def favicon():
 def home():
     form = SignupForm()
     if form.validate_on_submit():
-        flash('Sign up isn’t possible yet. Sorry!', 'danger')
+        models.Contact.create(
+            name=form.data['name'],
+            email=form.data['email'],
+            publisher_id=form.data['publisher_id'],
+        )
+        flash('Thanks! You’ll receive a confirmation email ' +
+              'shortly.', 'success')
         return redirect(url_for('canary.home') + '#sign-up')
 
     numbers = utils.get_stats()
@@ -124,3 +131,21 @@ def publisher(publisher_id):
                            errors=errors,
                            broken_count=broken_count,
                            validation_count=validation_count)
+
+
+@blueprint.route('/confirm/<token>')
+def confirm_email(token):
+    expired, invalid, contact = models.Contact.load_token(token)
+    if invalid:
+        flash('Oops! Something went wrong – we were not able to ' +
+              'subscribe you. Please try again.', 'danger')
+    elif expired:
+        flash('Oops! That link has expired – we were not able to ' +
+              'subscribe you. Please try again.', 'danger')
+    else:
+        contact.active = True
+        contact.confirmed_at = datetime.utcnow()
+        contact.save()
+        flash('Success! You’re subscribed to email updates.',
+              'success')
+    return redirect(url_for('canary.home') + '#sign-up')

@@ -1,0 +1,6 @@
+Hi there,
+
+We just need to confirm your email address. Please click the link below:
+{{ url_for('canary.confirm_email', token=token, _external=True) }}
+
+IATI Canary – {{ url_for('canary.home', _external=True) }}
