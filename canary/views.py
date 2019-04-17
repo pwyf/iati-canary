@@ -51,8 +51,14 @@ def publishers_json():
                 .op("+")(db.func.COUNT(models.XMLError.id))
                 .label('total'))
             .select_from(models.Publisher)
-            .outerjoin(models.DownloadError)
-            .outerjoin(models.XMLError)
+            .outerjoin(models.DownloadError,
+                       db.and_(
+                           models.DownloadError.publisher_id == models.Publisher.id,
+                           models.DownloadError.currently_erroring.is_(True)))
+            .outerjoin(models.XMLError,
+                       db.and_(
+                           models.XMLError.publisher_id == models.Publisher.id,
+                           models.XMLError.currently_erroring.is_(True)))
             .filter((models.Publisher.name.ilike(f'%{search}%')) |
                     (models.Publisher.id.ilike(f'%{search}%')))
             .group_by(models.Publisher.id)
@@ -90,8 +96,31 @@ def publisher(publisher_id):
         publisher = models.Publisher.find_or_fail(publisher_id)
     except ModelNotFoundError:
         return abort(404)
-    errors = publisher.download_errors + publisher.xml_errors + \
-        publisher.validation_errors
+    error_dict = {}
+    all_errors = {
+        '_download': publisher.download_errors,
+        '_xml': publisher.xml_errors,
+        'validation': publisher.validation_errors
+    }
+    for err_type, errors in all_errors.items():
+        for error in errors:
+            if error.dataset_id not in error_dict:
+                error_dict[error.dataset_id] = (err_type, error)
+                continue
+            if error_dict[error.dataset_id][1].currently_erroring:
+                continue
+            error_dict[error.dataset_id] = (err_type, error)
+    errors = sorted(list(error_dict.values()),
+                    key=lambda x: (x[1].currently_erroring is False, x[0]))
+    broken_count = len([e for e in errors
+                        if e[1].currently_erroring
+                        and e[0] != 'validation'])
+    validation_count = len([e for e in errors
+                            if e[1].currently_erroring and
+                            e[0] == 'validation'])
+    # for e in errors if e.currently_erroring and
     return render_template('publisher.html',
                            publisher=publisher,
-                           errors=errors)
+                           errors=errors,
+                           broken_count=broken_count,
+                           validation_count=validation_count)

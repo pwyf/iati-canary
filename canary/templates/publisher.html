@@ -11,7 +11,14 @@
 <div class="row">
   <div class="col-lg-12">
 
-<p>{{ errors | count }} of {{ publisher.total_datasets }} datasets have issues.</p>
+<p>The publisher has a total of {{ publisher.total_datasets }} datasets.</p>
+<ul>
+    <li>{{ broken_count }} datasets are broken</li>
+    {% set remaining_count = publisher.total_datasets - broken_count %}
+    {% if remaining_count > 0 %}
+    <li>{{ validation_count }} datasets have validation issues</li>
+    {% endif %}
+</ul>
 
 {% if errors %}
 <table class="table">
@@ -23,7 +30,7 @@
         </tr>
     </thead>
     <tbody>
-{% for error in errors %}
+{% for err_type, error in errors %}
         <tr>
             <td>
                 <a href="{{ error.dataset_url }}" target="_blank"><i class="fas fa-cloud-download-alt"></i></a>
@@ -38,9 +45,9 @@
             <td>
                 {% if not error.currently_erroring %}
                     Recently fixed
-                {% elif error.__tablename__ == 'download_error' %}
+                {% elif err_type == '_download' %}
                     Couldn’t download
-                {% elif error.__tablename__ == 'xml_error' %}
+                {% elif err_type == '_xml' %}
                     Not valid XML
                 {% else %}
                     Not valid against IATI schema <a href="http://validator.iatistandard.org/index.php?url={{ error.dataset_url }}" target="_blank">(validate)</a>
