@@ -149,3 +149,17 @@ def confirm_email(token):
         flash('Success! You’re subscribed to email updates.',
               'success')
     return redirect(url_for('canary.home') + '#sign-up')
+
+
+@blueprint.route('/unsubscribe/<token>')
+def unsubscribe(token):
+    _, invalid, contact = models.Contact.load_token(token)
+    if invalid:
+        flash('Oops! Something went wrong – we were not able to ' +
+              'unsubscribe you. Please try again.', 'danger')
+    else:
+        contact.active = False
+        contact.save()
+        flash('You were successfully unsubscribed.',
+              'success')
+    return redirect(url_for('canary.home') + '#sign-up')
