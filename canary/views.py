@@ -118,7 +118,7 @@ def publisher(publisher_id):
     validation_count = len([e for e in errors
                             if e[1].currently_erroring and
                             e[0] == 'validation'])
-    # for e in errors if e.currently_erroring and
+
     return render_template('publisher.html',
                            publisher=publisher,
                            errors=errors,
