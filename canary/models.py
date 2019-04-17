@@ -88,6 +88,38 @@ class Contact(BaseModel, CreatedUpdatedMixin):
         self.last_messaged_at = datetime.utcnow()
         self.save()
 
+    def send_email_alert(self, level='warning'):
+        errors = {
+            'validation': [],
+            'download': self.publisher.download_errors(
+                currently_erroring=True),
+            'xml': self.publisher.xml_errors(
+                currently_erroring=True),
+        }
+        if level == 'info':
+            errors['validation'] = self.publisher.validation_errors(
+                currently_erroring=True)
+        if reduce(lambda x, y: x + y, errors.values()) == []:
+            return
+
+        # text = render_template(f'emails/{level}.txt', errors=errors)
+        # html = render_template(f'emails/{level}.html', errors=errors)
+
+        # if level == 'info':
+        #     subject = 'Some datasets have issues'
+        # else:
+        #     subject = 'Warning: Some datasets are broken'
+
+        # mail.send_message(
+        #     subject=subject,
+        #     sender='IATI-Canary <no-reply@iati-canary.org>',
+        #     recipients=[f'{self.name} <{self.email}>'],
+        #     body=text,
+        #     html=html,
+        # )
+        # self.last_messaged_at = datetime.utcnow()
+        # self.save()
+
 
 class DatasetError(BaseModel, CreatedUpdatedMixin):
     __abstract__ = True

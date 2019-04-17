@@ -178,3 +178,13 @@ def get_stats():
 def flush_emails():
     for contact in models.Contact.where(last_messaged_at=None):
         contact.send_email_confirmation()
+
+    last_week = datetime.utcnow() - timedelta(days=7)
+    for contact in models.Contact.where(active=True,
+                                        last_messaged_at__lt=last_week):
+        contact.send_email_alert(level='info')
+
+    yesterday = datetime.utcnow() - timedelta(days=1)
+    for contact in models.Contact.where(active=True,
+                                        last_messaged_at__lt=yesterday):
+        contact.send_email_alert(level='warning')
