@@ -41,7 +41,8 @@ class Contact(BaseModel, CreatedUpdatedMixin):
     confirmed_at = db.Column(db.DateTime)
     last_messaged_at = db.Column(db.DateTime)
 
-    def _get_serializer(self):
+    @classmethod
+    def _get_serializer(cls):
         return URLSafeTimedSerializer(
             secret_key=current_app.config.get('SECRET_KEY'),
             salt=current_app.config.get('SECURITY_RESET_SALT', 'reset-salt'))
