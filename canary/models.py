@@ -1,9 +1,10 @@
+from functools import reduce
 from datetime import datetime, timedelta
 
-from flask import current_app
+from flask import current_app, render_template
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 
-from .extensions import db
+from .extensions import db, mail
 from sqlalchemy_mixins import AllFeaturesMixin
 
 
@@ -72,6 +73,20 @@ class Contact(BaseModel, CreatedUpdatedMixin):
         invalid = invalid or (contact is None)
 
         return expired, invalid, contact
+
+    def send_email_confirmation(self):
+        token = self.generate_token()
+        text = render_template('emails/confirm_email.txt', token=token)
+        html = render_template('emails/confirm_email.html', token=token)
+        mail.send_message(
+            subject='Please confirm your email address',
+            sender='IATI-Canary <no-reply@iati-canary.org>',
+            recipients=[f'{self.name} <{self.email}>'],
+            body=text,
+            html=html,
+        )
+        self.last_messaged_at = datetime.utcnow()
+        self.save()
 
 
 class DatasetError(BaseModel, CreatedUpdatedMixin):
