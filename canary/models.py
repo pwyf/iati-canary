@@ -102,8 +102,12 @@ class Contact(BaseModel, CreatedUpdatedMixin):
         if reduce(lambda x, y: x + y, errors.values()) == []:
             return
 
-        # text = render_template(f'emails/{level}.txt', errors=errors)
-        # html = render_template(f'emails/{level}.html', errors=errors)
+        # token = self.generate_token()
+
+        # text = render_template(f'emails/{level}.txt',
+        #     errors=errors, token=token)
+        # html = render_template(f'emails/{level}.html',
+        #     errors=errors, token=token)
 
         # if level == 'info':
         #     subject = 'Some datasets have issues'
