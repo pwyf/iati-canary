@@ -10,8 +10,8 @@
 
   <meta property="og:site_name" content="IATI Canary" />
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:image" content="{{ url_for('static', filename='img/canary.png') }}" />
-  <meta property="og:image" content="{{ url_for('static', filename='img/canary.png') }}" />
+  <meta name="twitter:image" content="{{ url_for('static', filename='img/canary.png', _external=True) }}" />
+  <meta property="og:image" content="{{ url_for('static', filename='img/canary.png', _external=True) }}" />
   <meta property="og:url" content="{{ url_for('canary.home', _external=True) }}">
   <meta name="twitter:url" content="{{ url_for('canary.home', _external=True) }}" />
   <meta property="og:title" content="IATI Canary" />
