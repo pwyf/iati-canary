@@ -188,7 +188,7 @@ def get_stats():
     }
 
 
-def flush_emails():
+def send_emails():
     for contact in models.Contact.where(last_messaged_at=None):
         contact.send_email_confirmation()
 

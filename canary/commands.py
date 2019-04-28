@@ -21,6 +21,6 @@ def fetch_errors():
 
 @click.command()
 @with_appcontext
-def flush_emails():
+def send_emails():
     '''Send some pending emails.'''
-    utils.flush_emails()
+    utils.send_emails()
