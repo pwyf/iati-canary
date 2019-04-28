@@ -22,7 +22,7 @@ class UniqueEmailField(StringField):
             publisher_id=form.data['publisher_id'],
         ).first()
         if pub:
-            msg = 'That email address is signed up for that publisher.'
+            msg = 'Email address is already signed up for that publisher.'
             raise ValueError(self.gettext(msg))
 
 
