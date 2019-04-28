@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import time
 
 import requests
 
@@ -20,6 +21,18 @@ def cleanup(days_ago):
             error.delete()
 
 
+def request_with_backoff(*args, attempts=5, backoff=0.5, **kwargs):
+    for attempt in range(1, attempts + 1):
+        try:
+            result = requests.request(*args, **kwargs)
+            return result
+        except requests.exceptions.ConnectionError:
+            wait = attempt * backoff
+            print(f'Rate limited! Retrying after {wait} seconds')
+            time.sleep(wait)
+    raise Exception(f'Failed after {attempts} attempts. Giving up.')
+
+
 def refresh_publishers():
     print('Refreshing list of publishers ...')
     url_tmpl = 'https://iatiregistry.org/api/3/action/package_search?' + \
@@ -29,7 +42,7 @@ def refresh_publishers():
     while True:
         print(f'Page {page}')
         start = page_size * (page - 1)
-        j = requests.get(url_tmpl.format(
+        j = request_with_backoff('get', url_tmpl.format(
             start=start, page_size=page_size)).json()
         if len(j['result']['results']) == 0:
             break
@@ -64,7 +77,7 @@ def refresh_metadata():
         first_pub = None
         while True:
             start = page_size * (page - 1)
-            j = requests.get(url_tmpl.format(
+            j = request_with_backoff('get', url_tmpl.format(
                 publisher_id=publisher.id,
                 start=start,
                 page_size=page_size)).json()
@@ -92,7 +105,7 @@ def fetch_errors():
     refresh_publishers()
     print('Fetching errors from github ...')
     meta = 'https://www.dropbox.com/s/6a3wggckhbb9nla/metadata.json?dl=1'
-    last_errored_at = requests.get(meta).json()['started_at']
+    last_errored_at = request_with_backoff('get', meta).json()['started_at']
     started_at = datetime.utcnow()
     gist_base = 'https://gist.githubusercontent.com/' + \
                 'andylolz/8a4e0657ec14c999de6f70f339656852/raw/'
@@ -103,7 +116,7 @@ def fetch_errors():
     }
     for slug, model in errors.items():
         print(f'Fetching {slug} ...')
-        r = requests.get(gist_base + slug)
+        r = request_with_backoff('get', gist_base + slug)
         for line in r.iter_lines():
             line = line.decode()
             if line == '.':
