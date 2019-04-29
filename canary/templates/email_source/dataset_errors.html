@@ -1,0 +1,134 @@
+{% extends "email_source/_layout.html" %}
+
+{% block content %}
+            <table class="spacer float-center">
+              <tbody>
+                <tr>
+                  <td height="16px" style="font-size:16px;line-height:16px;">&#xA0;</td>
+                </tr>
+              </tbody>
+            </table>
+            <table align="center" class="container float-center">
+              <tbody>
+                <tr>
+                  <td>
+                    <table class="row header">
+                      <tbody>
+                        <tr>
+                          <th class="small-12 large-12 columns first last">
+                            <table>
+                              <tr>
+                                <th>
+                                  <table class="spacer">
+                                    <tbody>
+                                      <tr>
+                                        <td height="16px" style="font-size:16px;line-height:16px;">&#xA0;</td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                  <h4 class="text-center">IATI Canary</h4> </th>
+                                <th class="expander"></th>
+                              </tr>
+                            </table>
+                          </th>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <table class="row">
+                      <tbody>
+                        <tr>
+                          <th class="small-12 large-12 columns first last">
+                            <table>
+                              <tr>
+                                <th>
+                                  <table class="spacer">
+                                    <tbody>
+                                      <tr>
+                                        <td height="32px" style="font-size:32px;line-height:32px;">&#xA0;</td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                  <center data-parsed=""> <img src="{{ url_for('static', filename='img/dead_canary.png', _external=True) }}" align="center" class="float-center"> </center>
+                                  <table class="spacer">
+                                    <tbody>
+                                      <tr>
+                                        <td height="16px" style="font-size:16px;line-height:16px;">&#xA0;</td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                  <h1 class="text-center">
+                                    {%- if (errors['_download'] + errors['_xml'] + errors['validation']) | length == 1 -%}
+                                    1 dataset you are watching has issues
+                                    {%- else -%}
+                                    {{ (errors['_download'] + errors['_xml'] + errors['validation']) | length }} datasets you are watching have issues
+                                    {%- endif -%}
+                                    </h1>
+                                  <table class="spacer">
+                                    <tbody>
+                                      <tr>
+                                        <td height="16px" style="font-size:16px;line-height:16px;">&#xA0;</td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                  <p class="text-center">The following problems were found with datasets you are watching:</p>
+
+                                  <ul>
+                                  {%- for err_type in ['_download', '_xml', 'validation'] -%}
+                                      {%- for error in errors[err_type] -%}
+                                          {%- if error.currently_erroring -%}
+                                          <li>
+                                            <a href="https://iatiregistry.org/dataset/{{ error.dataset_id }}">{%- if error.dataset_name -%}
+                                              {{ error.dataset_name }}
+                                            {%- else -%}
+                                              {{ error.dataset_id }}
+                                            {%- endif -%}</a>
+                                              &ndash;
+                                              {%- if err_type == '_download' %} Couldn’t download
+                                              {%- elif err_type == '_xml' %} Not valid XML
+                                              {%- else %} Not valid against IATI schema <a href="http://validator.iatistandard.org/index.php?url={{ error.dataset_url }}" target="_blank">(validate)</a>
+                                              {%- endif -%}
+                                          </li>
+                                          {%- endif -%}
+                                      {%- endfor -%}
+                                  {%- endfor -%}
+                                  </ul>
+
+
+
+                                  <table class="button large expand">
+                                    <tr>
+                                      <td>
+                                        <table>
+                                          <tr>
+                                            <td>
+                                              <center data-parsed=""><a href="{{ url_for('canary.publisher', publisher_id=contact.publisher_id, _external=True) }}" align="center" class="float-center">View errors on IATI Canary</a></center>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                      </td>
+                                      <td class="expander"></td>
+                                    </tr>
+                                  </table>
+                                  <hr>
+                                  <p><small>You’re receiving this email because your address was signed up for updates from <a href="{{ url_for('canary.home', _external=True) }}">IATI Canary</a>. <a href="{{ url_for('canary.unsubscribe', token=token, _external=True) }}">Click here to unsubscribe.</a></small></p>
+                                </th>
+                                <th class="expander"></th>
+                              </tr>
+                            </table>
+                          </th>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <table class="spacer">
+                      <tbody>
+                        <tr>
+                          <td height="16px" style="font-size:16px;line-height:16px;">&#xA0;</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+{% endblock %}

@@ -89,40 +89,57 @@ class Contact(BaseModel, CreatedUpdatedMixin):
         self.save()
 
     def send_email_alert(self, level='warning'):
-        errors = {
-            'validation': [],
-            'download': self.publisher.download_errors(
-                currently_erroring=True),
-            'xml': self.publisher.xml_errors(
-                currently_erroring=True),
-        }
-        if level == 'info':
-            errors['validation'] = self.publisher.validation_errors(
-                currently_erroring=True)
+        if self.publisher:
+            errors = {
+                '_download': [e for e in self.publisher.download_errors
+                              if e.currently_erroring],
+                '_xml': [e for e in self.publisher.xml_errors
+                         if e.currently_erroring],
+                'validation': [],
+            }
+            if level == 'info':
+                errors['validation'] = [
+                    e for e in self.publisher.validation_errors
+                    if e.currently_erroring]
+        else:
+            errors = {
+                '_download': DownloadError.where(
+                    currently_erroring=True).all(),
+                '_xml': XMLError.where(
+                    currently_erroring=True).all(),
+                'validation': [],
+            }
+            if level == 'info':
+                errors['validation'] = ValidationError.where(
+                    currently_erroring=True).all()
+
         if reduce(lambda x, y: x + y, errors.values()) == []:
+            # Nothing is broken, so no need to email
             return
 
-        # token = self.generate_token()
+        token = self.generate_token()
 
-        # text = render_template(f'emails/{level}.txt',
-        #     errors=errors, token=token)
-        # html = render_template(f'emails/{level}.html',
-        #     errors=errors, token=token)
+        text = render_template(
+            f'emails/dataset_errors.txt',
+            contact=self, errors=errors, token=token)
+        html = render_template(
+            f'emails/dataset_errors.html',
+            contact=self, errors=errors, token=token)
 
-        # if level == 'info':
-        #     subject = 'Some datasets have issues'
-        # else:
-        #     subject = 'Warning: Some datasets are broken'
+        if errors['_download'] + errors['_xml'] != []:
+            subject = 'Warning: Some IATI datasets are broken'
+        else:
+            subject = 'Some IATI datasets have issues'
 
-        # mail.send_message(
-        #     subject=subject,
-        #     sender='IATI-Canary <no-reply@iati-canary.org>',
-        #     recipients=[f'{self.name} <{self.email}>'],
-        #     body=text,
-        #     html=html,
-        # )
-        # self.last_messaged_at = datetime.utcnow()
-        # self.save()
+        mail.send_message(
+            subject=subject,
+            sender='IATI-Canary <no-reply@iati-canary.org>',
+            recipients=[f'{self.name} <{self.email}>'],
+            body=text,
+            html=html,
+        )
+        self.last_messaged_at = datetime.utcnow()
+        self.save()
 
 
 class DatasetError(BaseModel, CreatedUpdatedMixin):
