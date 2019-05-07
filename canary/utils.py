@@ -39,6 +39,7 @@ def refresh_publishers():
                'start={start}&rows={page_size}'
     page = 1
     page_size = 1000
+    started_at = datetime.utcnow()
     while True:
         print(f'Page {page}')
         start = page_size * (page - 1)
@@ -58,7 +59,15 @@ def refresh_publishers():
                     id=org_id,
                     name=org_name,
                 )
+            else:
+                pub.name = org_name
+                pub.modified_at = datetime.utcnow()
+                pub.save()
         page += 1
+    old_pubs = models.Publisher.where(modified_at__lt=started_at)
+    for old_pub in old_pubs:
+        print(f'Deleting: {old_pub.name} ({old_pub.id})')
+        old_pub.delete()
 
 
 def refresh_metadata():
@@ -129,6 +138,8 @@ def fetch_errors():
                 line = line.split(' ', 1)[-1]
             line_arr = line.split(' ', 2)
             publisher_id, dataset_id, dataset_url = line_arr
+            if not models.Publisher.find(publisher_id):
+                continue
             error = model.where(dataset_id=dataset_id).first()
             if error:
                 if error.last_errored_at == last_errored_at:

@@ -160,8 +160,9 @@ class DownloadError(DatasetError):
                              db.ForeignKey('publisher.id', ondelete='CASCADE'),
                              nullable=False)
     publisher = db.relationship('Publisher',
-                                backref=db.backref('download_errors',
-                                                   lazy=True))
+                                backref=db.backref(
+                                    'download_errors', lazy=True,
+                                    cascade='all, delete-orphan'))
 
 
 class XMLError(DatasetError):
@@ -169,8 +170,9 @@ class XMLError(DatasetError):
                              db.ForeignKey('publisher.id', ondelete='CASCADE'),
                              nullable=False)
     publisher = db.relationship('Publisher',
-                                backref=db.backref('xml_errors',
-                                                   lazy=True))
+                                backref=db.backref(
+                                    'xml_errors', lazy=True,
+                                    cascade='all, delete-orphan'))
 
 
 class ValidationError(DatasetError):
@@ -178,5 +180,6 @@ class ValidationError(DatasetError):
                              db.ForeignKey('publisher.id', ondelete='CASCADE'),
                              nullable=False)
     publisher = db.relationship('Publisher',
-                                backref=db.backref('validation_errors',
-                                                   lazy=True))
+                                backref=db.backref(
+                                    'validation_errors', lazy=True,
+                                    cascade='all, delete-orphan'))
