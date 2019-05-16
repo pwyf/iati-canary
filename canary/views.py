@@ -2,7 +2,7 @@ from datetime import datetime
 from os.path import join
 
 from flask import abort, Blueprint, render_template, send_from_directory, \
-                  jsonify, request, redirect, url_for, flash
+                  jsonify, request, redirect, url_for, flash, send_file
 from sqlalchemy_mixins import ModelNotFoundError
 
 from . import models, utils
@@ -133,8 +133,8 @@ def publisher(publisher_id):
                            validation_count=validation_count)
 
 
-@blueprint.route('/publisher/badge/<publisher_id>.json')
-def publisher_badge_json(publisher_id):
+@blueprint.route('/publisher/badge/<publisher_id>.svg')
+def publisher_badge_svg(publisher_id):
     try:
         publisher = models.Publisher.find_or_fail(publisher_id)
     except ModelNotFoundError:
@@ -150,29 +150,16 @@ def publisher_badge_json(publisher_id):
                            if e.currently_erroring],
         }
         if errors['download'] != [] or errors['xml'] != []:
-            status = 'critical'
-            message = 'erroring datasets'
-            is_error = True
+            status = 'errors'
         elif errors['validation'] != []:
-            status = 'important'
-            message = 'invalid datasets'
-            is_error = True
+            status = 'invalid'
         else:
             status = 'success'
-            message = 'success'
-            is_error = False
     else:
-        status = 'critical'
-        message = 'not found'
-        is_error = True
+        status = 'not_found'
 
-    return jsonify({
-        'schemaVersion': 1,
-        'label': 'canary',
-        'message': message,
-        'color': status,
-        'isError': is_error,
-    })
+    svg_file = join('static', 'img', 'badges', status + '.svg')
+    return send_file(svg_file, mimetype='image/svg+xml')
 
 
 @blueprint.route('/confirm/<token>')
