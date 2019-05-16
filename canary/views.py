@@ -133,6 +133,32 @@ def publisher(publisher_id):
                            validation_count=validation_count)
 
 
+@blueprint.route('/publisher/badge/<publisher_id>.json')
+def publisher_badge_json(publisher_id):
+    try:
+        publisher = models.Publisher.find_or_fail(publisher_id)
+    except ModelNotFoundError:
+        return abort(404)
+
+    if publisher.download_errors == [] and publisher.xml_errors == []:
+        status = 'success'
+        message = 'passing'
+        is_error = False
+    else:
+        status = 'critical'
+        message = 'errors'
+        is_error = True
+
+
+    return jsonify({
+        'schemaVersion': 1,
+        'label': 'canary',
+        'message': message,
+        'color': status,
+        'isError': is_error,
+    })
+
+
 @blueprint.route('/confirm/<token>')
 def confirm_email(token):
     expired, invalid, contact = models.Contact.load_token(token)
