@@ -138,17 +138,33 @@ def publisher_badge_json(publisher_id):
     try:
         publisher = models.Publisher.find_or_fail(publisher_id)
     except ModelNotFoundError:
-        return abort(404)
+        publisher = None
 
-    if publisher.download_errors == [] and publisher.xml_errors == []:
-        status = 'success'
-        message = 'passing'
-        is_error = False
+    if publisher is not None:
+        errors = {
+            'download': [e for e in publisher.download_errors
+                         if e.currently_erroring],
+            'xml': [e for e in publisher.xml_errors
+                    if e.currently_erroring],
+            'validation': [e for e in publisher.validation_errors
+                           if e.currently_erroring],
+        }
+        if errors['download'] != [] or errors['xml'] != []:
+            status = 'critical'
+            message = 'erroring datasets'
+            is_error = True
+        elif errors['validation'] != []:
+            status = 'important'
+            message = 'invalid datasets'
+            is_error = True
+        else:
+            status = 'success'
+            message = 'success'
+            is_error = False
     else:
         status = 'critical'
-        message = 'errors'
+        message = 'not found'
         is_error = True
-
 
     return jsonify({
         'schemaVersion': 1,
