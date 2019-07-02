@@ -25,13 +25,23 @@ def favicon():
 def home():
     form = SignupForm()
     if form.validate_on_submit():
-        models.Contact.create(
-            name=form.data['name'],
+        contact = models.Contact.where(
             email=form.data['email'],
+            confirmed_at=None,
             publisher_id=form.data['publisher_id'],
-        )
-        flash('Thanks! You’ll receive a confirmation email ' +
-              'shortly.', 'success')
+        ).first()
+        if contact:
+            contact.last_messaged_at = None
+            contact.save()
+            msg = 'Thanks! We’ll re-send your confirmation email shortly.'
+        else:
+            models.Contact.create(
+                name=form.data['name'],
+                email=form.data['email'],
+                publisher_id=form.data['publisher_id'],
+            )
+            msg = 'Thanks! You’ll receive a confirmation email shortly.'
+        flash(msg, 'success')
         return redirect(url_for('canary.home') + '#sign-up')
 
     numbers = utils.get_stats()
