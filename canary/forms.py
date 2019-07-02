@@ -17,12 +17,12 @@ class DynamicSelectField(SelectField):
 
 class UniqueEmailField(StringField):
     def pre_validate(self, form):
-        pub = models.Contact.where(
+        contact = models.Contact.where(
             email=self.data,
             confirmed_at__ne=None,
             publisher_id=form.data['publisher_id'],
         ).first()
-        if pub:
+        if contact:
             msg = 'Email address is already signed up for that publisher.'
             raise ValueError(self.gettext(msg))
 
