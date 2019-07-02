@@ -19,6 +19,7 @@ class UniqueEmailField(StringField):
     def pre_validate(self, form):
         pub = models.Contact.where(
             email=self.data,
+            confirmed_at__ne=None,
             publisher_id=form.data['publisher_id'],
         ).first()
         if pub:
