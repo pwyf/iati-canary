@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta
 import time
 
+from flask import current_app
 import requests
+import tweepy
 
 from . import models
 from .extensions import db
@@ -216,3 +218,16 @@ def send_emails():
     for contact in models.Contact.where(active=True,
                                         last_messaged_at__lt=yesterday):
         contact.send_email_alert(level='warning')
+
+
+def send_tweet():
+    consumer_key = current_app.config.get('TWITTER_CONSUMER_KEY')
+    consumer_secret = current_app.config.get('TWITTER_CONSUMER_SECRET')
+    access_token = current_app.config.get('TWITTER_ACCESS_TOKEN')
+    access_token_secret = current_app.config.get('TWITTER_ACCESS_TOKEN_SECRET')
+
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    auth.set_access_token(access_token, access_token_secret)
+    api = tweepy.API(auth)
+    status = ''
+    api.update_status(status=status)

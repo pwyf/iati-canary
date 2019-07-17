@@ -24,3 +24,10 @@ def fetch_errors():
 def send_emails():
     '''Send some pending emails.'''
     utils.send_emails()
+
+
+@click.command()
+@with_appcontext
+def send_tweet():
+    '''Send a pending tweet.'''
+    utils.send_tweet()
