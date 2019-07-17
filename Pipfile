@@ -20,6 +20,7 @@ flask-migrate = "*"
 sqlalchemy-mixins = "*"
 flask-wtf = "*"
 itsdangerous = "*"
+tweepy = "*"
 
 [requires]
 python_version = "3.6"
