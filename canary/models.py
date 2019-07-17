@@ -153,6 +153,7 @@ class DatasetError(BaseModel, CreatedUpdatedMixin):
     check_count = db.Column(db.Integer, default=1, nullable=False)
     last_errored_at = db.Column(db.DateTime, nullable=False,
                                 default=datetime.utcnow)
+    last_tweeted_at = db.Column(db.DateTime)
 
 
 class DownloadError(DatasetError):
