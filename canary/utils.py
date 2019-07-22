@@ -150,6 +150,8 @@ def fetch_errors():
                 error.error_count += 1
                 error.currently_erroring = True
                 error.last_errored_at = last_errored_at
+                error.dataset_url = dataset_url
+                error.publisher_id = publisher_id
                 error.save()
             else:
                 model.create(
