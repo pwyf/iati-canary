@@ -1,5 +1,14 @@
 {% extends "_layout.html" %}
 
+{% block metadata %}
+  <meta property="og:url" content="{{ url_for('canary.home', _external=True) }}">
+  <meta name="twitter:url" content="{{ url_for('canary.home', _external=True) }}" />
+  <meta property="og:title" content="IATI Canary" />
+  <meta name="twitter:title" content="IATI Canary" />
+  <meta property="og:description" content="An early warning system for IATI publishers." />
+  <meta name="twitter:description" content="An early warning system for IATI publishers." />
+{% endblock %}
+
 {% block content %}
 
   <!-- Header -->

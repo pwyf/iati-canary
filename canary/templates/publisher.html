@@ -1,5 +1,14 @@
 {% extends "_layout.html" %}
 
+{% block metadata %}
+  <meta property="og:url" content="{{ url_for('canary.publisher', publisher_id=publisher.id, _external=True) }}" />
+  <meta name="twitter:url" content="{{ url_for('canary.publisher', publisher_id=publisher.id, _external=True) }}" />
+  <meta property="og:title" content="{{ publisher.name }} | IATI Canary" />
+  <meta name="twitter:title" content="{{ publisher.name }} | IATI Canary" />
+  <meta property="og:description" content="{{ publisher.name }} datasets on IATI Canary – An early warning system for IATI publishers." />
+  <meta name="twitter:description" content="{{ publisher.name }} datasets on IATI Canary – An early warning system for IATI publishers." />
+{% endblock %}
+
 {% block content %}
   <!-- Page content -->
   <section id="page">
