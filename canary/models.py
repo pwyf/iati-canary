@@ -89,29 +89,20 @@ class Contact(BaseModel, CreatedUpdatedMixin):
         self.save()
 
     def send_email_alert(self, level='warning'):
-        if self.publisher:
-            errors = {
-                '_download': [e for e in self.publisher.download_errors
-                              if e.currently_erroring],
-                '_xml': [e for e in self.publisher.xml_errors
-                         if e.currently_erroring],
-                'validation': [],
-            }
-            if level == 'info':
-                errors['validation'] = [
-                    e for e in self.publisher.validation_errors
-                    if e.currently_erroring]
-        else:
-            errors = {
-                '_download': DownloadError.where(
-                    currently_erroring=True).all(),
-                '_xml': XMLError.where(
-                    currently_erroring=True).all(),
-                'validation': [],
-            }
-            if level == 'info':
-                errors['validation'] = ValidationError.where(
-                    currently_erroring=True).all()
+        if not self.publisher:
+            return
+
+        errors = {
+            '_download': [e for e in self.publisher.download_errors
+                          if e.currently_erroring],
+            '_xml': [e for e in self.publisher.xml_errors
+                     if e.currently_erroring],
+            'validation': [],
+        }
+        if level == 'info':
+            errors['validation'] = [
+                e for e in self.publisher.validation_errors
+                if e.currently_erroring]
 
         if reduce(lambda x, y: x + y, errors.values()) == []:
             # Nothing is broken, so no need to email
