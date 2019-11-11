@@ -4,7 +4,7 @@
 
 ## How does it work?
 
-IATI Canary leans heavily on some of the somewhat hidden outputs of [IATI Data Dump](https://andylolz.github.io/iati-data-dump/) – specifically, the various error logs that are [stored as GitHub gists here.](https://gist.github.com/andylolz/8a4e0657ec14c999de6f70f339656852)
+IATI Canary leans heavily on some of the somewhat hidden outputs of [IATI Data Dump](https://andylolz.github.io/iati-data-dump/) – specifically, the various error logs that are [stored as GitHub gists here.](https://gist.github.com/codeforIATIbot/f117c9be138aa94c9762d57affc51a64/)
 
 ## A note about design
 
