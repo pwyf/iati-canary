@@ -24,6 +24,12 @@ Install dependencies using pipenv:
 pipenv install
 ```
 
+And set up database:
+
+```shell
+pipenv run flask db upgrade
+```
+
 ## Getting started
 
 Run a local development server:
