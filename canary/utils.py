@@ -127,8 +127,8 @@ def fetch_errors():
                 'codeforIATIbot/f117c9be138aa94c9762d57affc51a64/raw/'
     errors = {
         'errors': models.DownloadError,
-        'xml-errors': models.XMLError,
-        'validation-errors': models.ValidationError,
+        # 'xml-errors': models.XMLError,
+        # 'validation-errors': models.ValidationError,
     }
     for slug, model in errors.items():
         print(f'Fetching {slug} ...')
