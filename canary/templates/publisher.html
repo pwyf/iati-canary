@@ -21,13 +21,6 @@
   <div class="col-lg-12">
 
 <p>The publisher has a total of {{ publisher.total_datasets }} datasets.</p>
-<ul>
-    <li>{{ broken_count }} datasets are broken</li>
-    {% set remaining_count = publisher.total_datasets - broken_count %}
-    {% if remaining_count > 0 %}
-    <li>{{ validation_count }} datasets have validation issues</li>
-    {% endif %}
-</ul>
 
 {% if errors %}
 <table class="table">
